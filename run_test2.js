@@ -34,3 +34,25 @@ for(const [d,o] of [['남유준','유재진'],['김희연','유재진'],['유재
   const at=x=>computeTax({donee:d,donor:o,date:'2026-08-21',amount:x});
   console.log('  '+o+'→'+d+'  한도 '+cm(m.safe).padStart(12)+'  한도시 '+cm(at(m.safe).payable)+'원  한도+100만 '+cm(at(m.safe+1000000).payable).padStart(9)+'원');
 }
+
+console.log('\n=== 10년 합산 창 경계 · 윤년 회귀 테스트 ===\n');
+{
+  const {addYears}=require('./engine.test.js');
+  DB.people['경계']={birth:''}; DB.donees.push('경계'); DB.people['부']={spouse:''};
+  DB.rel['경계>부']={r:'asc',skip:0};
+  const cases=[['2026-02-28','윤년 아닌 해 2월 말'],['2016-02-29','윤년 2월 29일'],['2020-10-13','평일']];
+  let ok=true;
+  for(const [gd,label] of cases){
+    DB.gifts=DB.gifts.filter(g=>g.id!=='B1');
+    DB.gifts.push({id:'B1',kind:'gift',donee:'경계',donor:'부',date:gd,amount:50000000,tax:0,type:'',note:'',wed:0,filed:0});
+    const last=addYears(gd,10), after=(()=>{const d=new Date(last+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+1);return d.toISOString().slice(0,10)})();
+    const inWin =computeTax({donee:'경계',donor:'부',date:last, amount:10000000}).priorSum;
+    const outWin=computeTax({donee:'경계',donor:'부',date:after,amount:10000000}).priorSum;
+    const pass = inWin===50000000 && outWin===0;
+    ok = ok && pass;
+    console.log('  '+(pass?'PASS':'FAIL')+'  증여 '+gd+' ('+label+')   10년째 '+last+' 합산 '+inWin.toLocaleString('en-US')
+      +'  /  다음날 '+after+' 합산 '+outWin.toLocaleString('en-US'));
+  }
+  DB.gifts=DB.gifts.filter(g=>g.id!=='B1');
+  console.log('\n  → 경계 판정 ' + (ok?'전부 정상 ✓':'문제 있음 ✗'));
+}

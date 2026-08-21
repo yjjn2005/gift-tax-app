@@ -8,7 +8,7 @@ const SEED = {
     '유해인': { birth:'', spouse:'',       marry:'2024-11-02' },
     '유지원': { birth:'', spouse:'',       marry:'' },
     '유태현': { birth:'', spouse:'',       marry:'2026-10-07' },
-    '남유준': { birth:'', spouse:'',       marry:'' },
+    '남유준': { birth:'2026-01-01', spouse:'', marry:'' },   /* 2026년생 · 미성년 — 정확한 일자 확인 필요 */
     '유창노': { birth:'', spouse:'',       marry:'' },
     '김세화': { birth:'', spouse:'',       marry:'' },
     '유태로': { birth:'', spouse:'',       marry:'' }
@@ -221,9 +221,11 @@ function computeTax(i){
   };
   if(!donee || !donor || !date) { out.notes.push('수증자 · 증여자 · 일자를 모두 선택하세요.'); return out; }
 
-  const winStart = addYears(date,-10);
+  /* 10년 창 판정 — 각 증여건 기준으로 +10년을 계산해 비교한다.
+     기준일에서 -10년을 빼는 방식은 윤년(2036-02-29 → 2026-02-28)에 하루가 새어 들어온다. */
   const inWin = DB.gifts.filter(g =>
-    g.kind==='gift' && !g.nosum && g.donee===donee && g.id!==i.excludeId && g.date < date && g.date >= winStart);
+    g.kind==='gift' && !g.nosum && g.donee===donee && g.id!==i.excludeId &&
+    g.date < date && date <= addYears(g.date, 10));
 
   /* ① 10년 합산 (동일인 그룹) */
   const group = aggGroup(donee,donor);
