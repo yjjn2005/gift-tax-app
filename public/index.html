@@ -224,6 +224,7 @@ footer{padding:22px 0 12px;text-align:center;font-size:11px;color:var(--dim2);li
       <p class="sub">GIFT &amp; LOAN REGISTRY · TAX ENGINE</p>
     </div>
     <div class="hstat">
+      <span class="pill" id="pVer" title="앱 버전">v-</span>
       <span class="pill" id="pSync">동기화 없음</span>
       <span class="pill">수증자 <b id="pDonee">0</b>명</span>
       <span class="pill">이력 <b id="pCnt">0</b>건</span>
@@ -232,6 +233,7 @@ footer{padding:22px 0 12px;text-align:center;font-size:11px;color:var(--dim2);li
 </div></header>
 
 <nav><div class="wrap"><div class="tabs">
+  <button class="tab" data-t="gcalc">일반 계산기</button>
   <button class="tab on" data-t="dash">대시보드</button>
   <button class="tab" data-t="hist">인별 이력</button>
   <button class="tab" data-t="calc">증여세 계산</button>
@@ -241,6 +243,130 @@ footer{padding:22px 0 12px;text-align:center;font-size:11px;color:var(--dim2);li
 </div></div></nav>
 
 <div class="wrap">
+
+<!-- ══════ 일반 증여세 · 상속세 계산기 ══════ -->
+<section id="gcalc">
+  <div class="card gold">
+    <h2><span class="ic">&#9670;</span> 일반 증여세 · 상속세 계산기</h2>
+    <p class="desc">가족 이력과 <b>무관하게</b> 독립적으로 계산합니다. 아무 숫자나 넣어 세액을 확인해 보세요. 입력한 값은 저장되지 않으며 등록된 이력에도 영향을 주지 않습니다.</p>
+    <div class="chips">
+      <button class="chip on" id="gmGift" onclick="gMode('gift')">증여세 계산</button>
+      <button class="chip" id="gmInh" onclick="gMode('inh')">상속세 계산</button>
+    </div>
+  </div>
+
+  <!-- ─── 증여세 ─── -->
+  <div id="gPanelGift">
+    <div class="card">
+      <h2><span class="ic">&#9312;</span> 증여 정보</h2>
+      <div class="grid g2 sm1">
+        <div><label class="f">증여일자</label><input type="date" id="ngDate" /></div>
+        <div><label class="f">증여재산가액 (원)</label><input class="money" id="ngAmt" inputmode="numeric" placeholder="0" /></div>
+      </div>
+      <label class="f" style="margin-top:10px">증여자와의 관계 <span style="color:var(--dim2);font-weight:500">(받는 사람 기준)</span></label>
+      <select id="ngRel">
+        <option value="asc" selected>직계존속 &mdash; 부모 · 조부모 · 외조부모 (공제 5천만원)</option>
+        <option value="spouse">배우자 (공제 6억원)</option>
+        <option value="desc">직계비속 &mdash; 자녀 · 손자녀 (공제 5천만원)</option>
+        <option value="rel">기타친족 &mdash; 형제자매 · 6촌 이내 혈족 · 4촌 이내 인척 (공제 1천만원)</option>
+        <option value="other">타인 &mdash; 남남 · 사실혼 등 (공제 없음)</option>
+      </select>
+      <div class="grid g2 sm1" style="margin-top:4px">
+        <label class="chk"><input type="checkbox" id="ngMinor" /> 받는 사람이 <b>미성년자</b> (직계존속 공제 2천만원)</label>
+        <label class="chk"><input type="checkbox" id="ngSkip" /> <b>세대생략</b> &mdash; 조부모 &rarr; 손자녀 (30% 할증)</label>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <button class="btn sm" onclick="ngAdd(10000000)">+1천만</button>
+        <button class="btn sm" onclick="ngAdd(50000000)">+5천만</button>
+        <button class="btn sm" onclick="ngAdd(100000000)">+1억</button>
+        <button class="btn sm" onclick="ngAdd(500000000)">+5억</button>
+        <button class="btn sm" onclick="ngAdd(1000000000)">+10억</button>
+        <button class="btn sm danger" onclick="ngClear()">초기화</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="ic">&#9313;</span> 10년 내 기존 증여 · 추가 공제 <span class="kor">(없으면 비워두세요)</span></h2>
+      <p class="desc">증여일 전 10년 이내에 <b>같은 사람</b>(직계존속은 그 배우자를 포함)에게서 받은 증여가 있으면 합산해 누진세율을 적용합니다.</p>
+      <div class="grid g3">
+        <div><label class="f">10년 내 기증여 재산가액 (원)</label><input class="money" id="ngPrior" inputmode="numeric" placeholder="0" /></div>
+        <div><label class="f">그때 낸 증여세 (원)</label><input class="money" id="ngPtax" inputmode="numeric" placeholder="비우면 자동계산" /></div>
+        <div><label class="f">혼인 · 출산 공제액 (원)</label><input class="money" id="ngWed" inputmode="numeric" placeholder="0 · 최대 1억" /></div>
+      </div>
+      <div class="grid g2 sm1">
+        <div><label class="f">인수한 채무 &mdash; 부담부증여 (원)</label><input class="money" id="ngDebt" inputmode="numeric" placeholder="0" /></div>
+        <div><label class="f">감정평가수수료 (원)</label><input class="money" id="ngFee" inputmode="numeric" placeholder="0" /></div>
+      </div>
+    </div>
+
+    <div id="ngOut"></div>
+  </div>
+
+  <!-- ─── 상속세 ─── -->
+  <div id="gPanelInh" style="display:none">
+    <div class="card">
+      <h2><span class="ic">&#9312;</span> 상속재산</h2>
+      <div class="grid g2 sm1">
+        <div><label class="f">상속개시일 (사망일)</label><input type="date" id="niDate" /></div>
+        <div><label class="f">총 상속재산가액 (원)</label><input class="money" id="niEstate" inputmode="numeric" placeholder="0" /></div>
+        <div><label class="f">그 중 금융재산 (예금 · 주식 · 보험 등)</label><input class="money" id="niFin" inputmode="numeric" placeholder="0" /></div>
+        <div><label class="f">금융채무 (대출 등)</label><input class="money" id="niFindebt" inputmode="numeric" placeholder="0" /></div>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn sm" onclick="niAdd(500000000)">+5억</button>
+        <button class="btn sm" onclick="niAdd(1000000000)">+10억</button>
+        <button class="btn sm" onclick="niAdd(3000000000)">+30억</button>
+        <button class="btn sm danger" onclick="niClear()">초기화</button>
+      </div>
+      <p class="desc" style="margin:10px 0 0">※ 보험금 · 퇴직금 · 신탁재산(간주상속재산)도 총 상속재산가액에 포함해 입력하세요.</p>
+    </div>
+
+    <div class="card">
+      <h2><span class="ic">&#9313;</span> 상속인 구성</h2>
+      <div class="grid g3">
+        <div style="display:flex;align-items:flex-end"><label class="chk"><input type="checkbox" id="niSpouse" checked /> <b>배우자</b>가 있음</label></div>
+        <div><label class="f">자녀 수 (명)</label><input type="number" id="niKids" min="0" step="1" value="0" /></div>
+        <div><label class="f">배우자가 실제 상속받는 금액 (원)</label><input class="money" id="niSpget" inputmode="numeric" placeholder="0" /></div>
+      </div>
+      <div class="hr"></div>
+      <p class="desc">아래는 해당자가 있을 때만 입력하세요. 기초공제 2억 + 인적공제 합계가 5억을 넘지 않으면 <b>일괄공제 5억원</b>이 자동으로 적용됩니다.</p>
+      <div class="grid g3">
+        <div><label class="f">미성년 상속인 잔여연수 합계 (년)</label><input type="number" id="niMinor" min="0" step="1" value="0" /></div>
+        <div><label class="f">65세 이상 상속인 수 (명)</label><input type="number" id="niElder" min="0" step="1" value="0" /></div>
+        <div><label class="f">장애인 기대여명 합계 (년)</label><input type="number" id="niDis" min="0" step="1" value="0" /></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="ic">&#9314;</span> 차감 항목 · 추가 공제</h2>
+      <div class="grid g2 sm1">
+        <div><label class="f">공과금 (원)</label><input class="money" id="niPublic" inputmode="numeric" placeholder="0" /></div>
+        <div><label class="f">채무 (원)</label><input class="money" id="niDebt" inputmode="numeric" placeholder="0" /></div>
+        <div><label class="f">장례비용 (원) · 500만~1천만 인정</label><input class="money" id="niFuneral" inputmode="numeric" placeholder="0" /></div>
+        <div><label class="f">봉안 · 자연장지 비용 (원) · 500만 한도</label><input class="money" id="niFuneral2" inputmode="numeric" placeholder="0" /></div>
+        <div><label class="f">동거주택 상속공제 대상 주택가액 (원)</label><input class="money" id="niHouse" inputmode="numeric" placeholder="0 · 6억 한도" /></div>
+        <div><label class="f">감정평가수수료 (원)</label><input class="money" id="niFee" inputmode="numeric" placeholder="0" /></div>
+      </div>
+      <p class="desc" style="margin:10px 0 0">※ 동거주택 상속공제는 10년 이상 동거한 무주택 직계비속이 상속받는 경우에만 해당합니다. 요건을 충족하는 금액만 입력하세요.</p>
+    </div>
+
+    <div class="card">
+      <h2><span class="ic">&#9315;</span> 사전증여 <span class="kor">(없으면 비워두세요)</span></h2>
+      <p class="desc">상속인에게는 <b>10년 이내</b>, 상속인이 아닌 사람에게는 <b>5년 이내</b> 증여한 재산이 상속재산에 합산됩니다.</p>
+      <div class="grid g3">
+        <div><label class="f">사전증여 재산가액 (원)</label><input class="money" id="niPre" inputmode="numeric" placeholder="0" /></div>
+        <div><label class="f">사전증여 과세표준 합계 (원)</label><input class="money" id="niPrebase" inputmode="numeric" placeholder="0" /></div>
+        <div><label class="f">그때 낸 증여세 (원)</label><input class="money" id="niPretax" inputmode="numeric" placeholder="0" /></div>
+      </div>
+      <div class="grid g2 sm1">
+        <div><label class="f">그 중 배우자가 받은 사전증여 과세표준 (원)</label><input class="money" id="niPrebaseSp" inputmode="numeric" placeholder="0" /></div>
+        <div style="display:flex;align-items:flex-end"><label class="chk"><input type="checkbox" id="niSkip" /> <b>세대생략</b> 상속 &mdash; 손자녀가 상속 (30% 할증)</label></div>
+      </div>
+    </div>
+
+    <div id="niOut"></div>
+  </div>
+</section>
 
 <!-- ══════════ 대시보드 ══════════ -->
 <section id="dash" class="on">
@@ -1478,6 +1604,250 @@ async function pullSync(){
   }
 }
 
+
+/* ════════════════════════════════════════════════════════
+   10. 일반 증여세 · 상속세 계산기 (가족 이력과 독립)
+   ════════════════════════════════════════════════════════ */
+function gMode(m){
+  const isG = m === 'gift';
+  $('gmGift').classList.toggle('on', isG);
+  $('gmInh').classList.toggle('on', !isG);
+  $('gPanelGift').style.display = isG ? '' : 'none';
+  $('gPanelInh').style.display  = isG ? 'none' : '';
+  if(isG) renderGiftG(); else renderInh();
+}
+function ngAdd(v){ setMoney($('ngAmt'), getMoney($('ngAmt'))+v); renderGiftG(); }
+function ngClear(){ ['ngAmt','ngPrior','ngPtax','ngWed','ngDebt','ngFee'].forEach(id=>setMoney($(id),0)); renderGiftG(); }
+function niAdd(v){ setMoney($('niEstate'), getMoney($('niEstate'))+v); renderInh(); }
+function niClear(){ ['niEstate','niFin','niFindebt','niSpget','niPublic','niDebt','niFuneral','niFuneral2','niHouse','niFee','niPre','niPrebase','niPretax','niPrebaseSp'].forEach(id=>setMoney($(id),0)); renderInh(); }
+
+/* ── 일반 증여세 ── */
+function calcGiftG(){
+  const date = $('ngDate').value || todayISO();
+  const rel  = $('ngRel').value;
+  const amt  = getMoney($('ngAmt'));
+  const debt = getMoney($('ngDebt'));
+  const fee  = getMoney($('ngFee'));
+  const prior= getMoney($('ngPrior'));
+  const ptaxIn = getMoney($('ngPtax'));
+  const wedIn  = Math.min(getMoney($('ngWed')), 100000000);
+  const minor = $('ngMinor').checked;
+  const skip  = $('ngSkip').checked;
+
+  const net = Math.max(0, amt - debt);                       // 부담부증여: 채무액은 양도소득세 대상
+  const limit = rel==='spouse' ? 600000000
+              : rel==='asc'    ? (minor ? 20000000 : 50000000)
+              : rel==='desc'   ? 50000000
+              : rel==='rel'    ? 10000000 : 0;
+  const aggregated = prior >= 10000000;                      // 1천만원 미만은 가산하지 않음
+  const addBack = aggregated ? prior : 0;
+  const taxableValue = net + addBack;
+
+  const wed = (rel==='asc') ? Math.min(wedIn, net) : 0;       // 혼인·출산공제는 직계존속 증여만
+  const generalDeduct = Math.min(Math.max(0, taxableValue - wed), limit);
+  const base = Math.max(0, taxableValue - generalDeduct - wed - fee);
+  const taxed = base >= 500000;
+  const gross = taxed ? grossTax(base) : 0;
+  const surRate = skip ? ((minor && taxableValue > 2000000000) ? 0.40 : 0.30) : 0;
+  const surcharge = gross * surRate;
+
+  // 기납부세액공제 — 입력값이 있으면 그 값, 없으면 종전 증여분 산출세액을 자동 계산
+  let preCredit = 0, priorBase = 0, priorGross = 0, autoPrior = false;
+  if(aggregated){
+    priorBase  = Math.max(0, prior - Math.min(prior, limit));
+    priorGross = priorBase >= 500000 ? grossTax(priorBase) : 0;
+    priorGross = priorGross * (1 + surRate);
+    autoPrior  = !ptaxIn;
+    const cap  = base > 0 ? (gross + surcharge) * (Math.min(priorBase, base)/base) : 0;
+    preCredit  = Math.min(ptaxIn || priorGross, cap);
+  }
+  const rate = filingRate(date);
+  const before = Math.max(0, gross + surcharge - preCredit);
+  const filingCredit = before * rate;
+  const payable = floor10(before - filingCredit);
+
+  return { date, rel, relName:RELNAME[rel], amt, debt, net, fee, prior, aggregated, taxableValue,
+           limit, generalDeduct, wed, base, taxed, bracket:bracketOf(base), gross, surRate, surcharge,
+           preCredit, priorBase, priorGross, autoPrior, filingRate:rate, filingCredit, payable, minor, skip,
+           effRate: amt ? payable/amt : 0 };
+}
+/* 이 조건에서 증여세가 0원이 되는 최대 증여액.
+   '납부세액 0원'이 아니라 '이번 증여로 과세표준이 늘지 않는 한도'를 기준으로 삼는다.
+   납부세액 기준으로 잡으면 과세표준 50만원 미만 부과제외 규정 때문에
+   1억 5,049만 9,999원 같은 어중간한 값이 나와 실무에서 쓰기 어렵다. */
+function gFreeMax(){
+  const keep = getMoney($('ngAmt'));
+  const baseAt = v => { setMoney($('ngAmt'), v); return calcGiftG().base; };
+  const floorBase = baseAt(0);
+  const ok = v => baseAt(v) <= floorBase;
+  let lo = 0, hi = 1000000, guard = 0;
+  while(ok(hi) && hi < 1e13 && guard++ < 60) hi *= 2;
+  if(ok(hi)){ setMoney($('ngAmt'), keep); return hi; }
+  while(hi - lo > 1){ const mid = Math.floor((lo+hi)/2); if(ok(mid)) lo = mid; else hi = mid; }
+  setMoney($('ngAmt'), keep);
+  return lo;
+}
+function renderGiftG(){
+  const r = calcGiftG();
+  if(!r.amt){ $('ngOut').innerHTML = '<div class="card"><div class="note">증여재산가액을 입력하면 세액이 즉시 계산됩니다.</div></div>'; return; }
+  const free = gFreeMax();
+  const zero = r.payable === 0;
+  const li = (lb,vl,cls,sub)=>'<div class="li '+(cls||'')+'"><span class="lb">'+lb+(sub?'<small>'+sub+'</small>':'')+'</span><span class="vl">'+vl+'</span></div>';
+  $('ngOut').innerHTML =
+  '<div class="card gold"><div class="res">'
+  + '<div class="res-head"><div class="k">납 부 할 증 여 세</div>'
+  + '<div class="v '+(zero?'zero':'')+'">'+(zero?'0원 · 비과세':won(r.payable))+'</div>'
+  + '<div class="n">'+(zero?'현재 조건에서는 증여세가 발생하지 않습니다':korMoney(r.payable)+' · 실효세율 '+(r.effRate*100).toFixed(2)+'%')+'</div></div>'
+  + '<div class="br">'
+  + li('증여재산가액', won(r.amt))
+  + (r.debt ? li('인수 채무 차감 (부담부증여)', '− '+won(r.debt), 'minus', '채무액은 증여자의 양도소득세 대상입니다') : '')
+  + li('10년 내 기증여 가산', (r.aggregated?'+ ':'')+won(r.aggregated?r.prior:0), r.aggregated?'plus':'', r.aggregated?'동일인 합산 후 누진세율 적용':'1천만원 미만 · 가산 대상 아님')
+  + li('증여세 과세가액', won(r.taxableValue), 'hi')
+  + li('증여재산공제 ('+r.relName+')', '− '+won(r.generalDeduct), 'minus', '10년 한도 '+cm(r.limit)+'원'+(r.minor?' · 미성년자':''))
+  + (r.wed ? li('혼인 · 출산 증여재산공제', '− '+won(r.wed), 'minus', '평생 통합 1억원 한도') : '')
+  + (r.fee ? li('감정평가수수료 공제', '− '+won(r.fee), 'minus') : '')
+  + li('과세표준', won(r.base), 'hi', r.taxed ? (r.bracket ? '적용세율 '+(r.bracket.rate*100)+'% · 누진공제 '+cm(r.bracket.ded)+'원' : '') : '50만원 미만 — 부과 제외')
+  + li('산출세액', won(r.gross), 'plus')
+  + (r.surcharge ? li('세대생략 할증', '+ '+won(r.surcharge), 'plus', '산출세액의 '+(r.surRate*100)+'%') : '')
+  + (r.preCredit ? li('기납부세액공제', '− '+won(r.preCredit), 'minus', r.autoPrior?'종전 증여분 산출세액 자동 계산':'입력한 기납부세액 기준') : '')
+  + li('신고세액공제 ('+(r.filingRate*100)+'%)', '− '+won(r.filingCredit), 'minus', '증여일이 속한 달의 말일부터 3개월 이내 신고 시')
+  + li('납부할 세액', won(r.payable), 'hi', '10원 미만 절사')
+  + li('받는 사람 실수령액', won(r.amt - r.payable), '', '증여액에서 세금을 뺀 금액')
+  + '</div></div>'
+  + '<div class="note '+(free>0?'ok':'warn')+'" style="margin-top:12px">'
+  + (free>0
+      ? '같은 조건에서 <b>'+korMoney(free)+'</b>까지는 증여세가 <b>0원</b>입니다.'
+        + (r.amt>free ? ' 지금 입력한 '+korMoney(r.amt)+'은 이 한도를 <b>'+korMoney(r.amt-free)+'</b> 초과합니다.' : '')
+      : '이 조건에서는 첫 원부터 과세됩니다. 공제 한도가 이미 소진되었거나 공제가 없는 관계입니다.')
+  + '</div>'
+  + (r.debt ? '<div class="note warn" style="margin-top:10px"><b>부담부증여 주의</b> — 인수한 채무 '+won(r.debt)+' 부분은 증여가 아니라 <b>유상 양도</b>로 보아 <b>증여자</b>에게 양도소득세가 별도로 과세됩니다. 이 계산기에는 양도소득세가 포함되어 있지 않습니다.</div>' : '')
+  + '</div>';
+}
+
+/* ── 상속세 ── */
+function calcInh(){
+  const v = id => getMoney($(id));
+  const n = id => Math.max(0, Number($(id).value||0));
+  const date = $('niDate').value || todayISO();
+
+  const estate = v('niEstate'), fin = v('niFin'), findebt = v('niFindebt'), house = v('niHouse');
+  const pub = v('niPublic'), debt = v('niDebt'), fun = v('niFuneral'), fun2 = v('niFuneral2'), fee = v('niFee');
+  const pre = v('niPre'), preBase = v('niPrebase'), preTax = v('niPretax'), preBaseSp = v('niPrebaseSp');
+  const hasSp = $('niSpouse').checked, kids = n('niKids'), spGet = v('niSpget');
+  const minorY = n('niMinor'), elder = n('niElder'), disY = n('niDis');
+  const skip = $('niSkip').checked;
+
+  /* 장례비용 공제 — 일반 500만~1천만 + 봉안시설 500만 한도 */
+  const funA = Math.min(Math.max(fun, 5000000), 10000000);
+  const funB = Math.min(fun2, 5000000);
+  const funeral = funA + funB;
+
+  /* 상속세 과세가액 */
+  const netEstate = Math.max(0, estate - pub - debt - funeral);
+  const TV = netEstate + pre;
+
+  /* 기초공제 + 인적공제  vs  일괄공제 5억 */
+  const basicD = 200000000, kidD = kids*50000000, minorD = minorY*10000000,
+        elderD = elder*50000000, disD = disY*10000000;
+  const personal = basicD + kidD + minorD + elderD + disD;
+  const lump = 500000000;
+  const spouseOnly = hasSp && kids === 0;                    // 배우자 단독상속은 일괄공제 불가
+  const baseDeduct = spouseOnly ? personal : Math.max(personal, lump);
+  const usedLump = !spouseOnly && lump > personal;
+
+  /* 배우자상속공제 — 최소 5억, 최대 30억 */
+  let spD = 0, spLimit = 0, spShare = 0;
+  if(hasSp){
+    spShare = 1.5 / (1.5 + kids);
+    spLimit = Math.floor(Math.min(Math.max(0, (estate - pub - debt + preBase) * spShare - preBaseSp), 3000000000));
+    spD = Math.floor(Math.max(500000000, Math.min(spGet, spLimit)));
+  }
+
+  /* 금융재산상속공제 — 순금융재산 2천만 이하 전액, 초과분은 20%(최소 2천만 · 최대 2억) */
+  const netFin = Math.max(0, fin - findebt);
+  const finD = netFin === 0 ? 0
+             : netFin <= 20000000 ? netFin
+             : Math.floor(Math.min(Math.max(netFin*0.2, 20000000), 200000000));
+
+  /* 동거주택상속공제 — 6억 한도 */
+  const houseD = Math.min(house, 600000000);
+
+  /* 상속공제 종합한도 (상증법 §24) */
+  const totalD = baseDeduct + spD + finD + houseD;
+  const capLimit = Math.max(0, TV - preBase);
+  const applied = Math.min(totalD, capLimit);
+  const capped = totalD > capLimit;
+
+  const base = Math.max(0, TV - applied - fee);
+  const taxed = base >= 500000;
+  const gross = taxed ? grossTax(base) : 0;
+  const surRate = skip ? 0.30 : 0;
+  const surcharge = gross * surRate;
+
+  /* 증여세액공제 — 사전증여분 기납부세액 (한도: 산출세액 × 사전증여 과세표준 / 총 과세표준) */
+  const giftCap = base > 0 ? (gross + surcharge) * (Math.min(preBase, base)/base) : 0;
+  const giftCredit = Math.min(preTax, giftCap);
+
+  const rate = filingRate(date);
+  const before = Math.max(0, gross + surcharge - giftCredit);
+  const filingCredit = before * rate;
+  const payable = floor10(before - filingCredit);
+
+  return { date, estate, pub, debt, funeral, funA, funB, netEstate, pre, preBase, TV,
+           basicD, kidD, minorD, elderD, disD, personal, lump, usedLump, spouseOnly, baseDeduct,
+           hasSp, kids, spShare, spLimit, spD, spGet, netFin, finD, house, houseD,
+           totalD, capLimit, applied, capped, fee, base, taxed, bracket:bracketOf(base),
+           gross, surRate, surcharge, preTax, giftCredit, giftCap, filingRate:rate, filingCredit, payable,
+           effRate: estate ? payable/estate : 0 };
+}
+function renderInh(){
+  const r = calcInh();
+  if(!r.estate){ $('niOut').innerHTML = '<div class="card"><div class="note">총 상속재산가액을 입력하면 세액이 즉시 계산됩니다.</div></div>'; return; }
+  const zero = r.payable === 0;
+  const li = (lb,vl,cls,sub)=>'<div class="li '+(cls||'')+'"><span class="lb">'+lb+(sub?'<small>'+sub+'</small>':'')+'</span><span class="vl">'+vl+'</span></div>';
+  const heirs = (r.hasSp?'배우자':'') + (r.hasSp&&r.kids?' + ':'') + (r.kids?'자녀 '+r.kids+'명':'') || '상속인 미지정';
+  const 분납 = r.payable > 20000000 ? '연부연납(최대 10년 분할) 또는 분납 가능'
+             : r.payable > 10000000 ? '2개월 내 분납 가능' : '';
+
+  $('niOut').innerHTML =
+  '<div class="card gold"><div class="res">'
+  + '<div class="res-head"><div class="k">납 부 할 상 속 세</div>'
+  + '<div class="v '+(zero?'zero':'')+'">'+(zero?'0원 · 비과세':won(r.payable))+'</div>'
+  + '<div class="n">'+(zero?'상속공제 범위 안이라 상속세가 발생하지 않습니다':korMoney(r.payable)+' · 상속재산 대비 '+(r.effRate*100).toFixed(2)+'%')+'</div></div>'
+  + '<div class="br">'
+  + li('총 상속재산가액', won(r.estate))
+  + (r.pub ? li('공과금', '− '+won(r.pub), 'minus') : '')
+  + (r.debt ? li('채무', '− '+won(r.debt), 'minus') : '')
+  + li('장례비용 공제', '− '+won(r.funeral), 'minus', '일반 '+cm(r.funA)+'원(500만~1천만 인정) + 봉안시설 '+cm(r.funB)+'원')
+  + (r.pre ? li('사전증여재산 가산', '+ '+won(r.pre), 'plus', '상속인 10년 이내 · 상속인 외 5년 이내') : '')
+  + li('상속세 과세가액', won(r.TV), 'hi')
+  + li(r.usedLump ? '일괄공제' : '기초공제 + 인적공제', '− '+won(r.baseDeduct), 'minus',
+       r.usedLump ? '기초 2억 + 인적 '+cm(r.personal-r.basicD)+'원 = '+cm(r.personal)+'원보다 일괄공제 5억이 유리'
+                  : '기초 '+cm(r.basicD)+' + 자녀 '+cm(r.kidD)+' + 미성년 '+cm(r.minorD)+' + 연로자 '+cm(r.elderD)+' + 장애인 '+cm(r.disD)
+                    + (r.spouseOnly?' · 배우자 단독상속은 일괄공제 불가':''))
+  + (r.hasSp ? li('배우자상속공제', '− '+won(r.spD), 'minus',
+       '법정상속분 '+(r.spShare*100).toFixed(1)+'% · 한도 '+cm(r.spLimit)+'원 · 최소 5억 보장'
+       + (r.spD===500000000 && r.spGet<500000000 ? ' (최소공제 적용)' : '')) : '')
+  + (r.finD ? li('금융재산상속공제', '− '+won(r.finD), 'minus', '순금융재산 '+cm(r.netFin)+'원 기준 · 2억원 한도') : '')
+  + (r.houseD ? li('동거주택상속공제', '− '+won(r.houseD), 'minus', '6억원 한도') : '')
+  + (r.capped ? li('상속공제 종합한도 적용', '공제 '+cm(r.totalD)+' → '+cm(r.applied)+'원', 'plus', '상증법 §24 — 사전증여 과세표준만큼 공제가 제한됩니다') : '')
+  + (r.fee ? li('감정평가수수료 공제', '− '+won(r.fee), 'minus') : '')
+  + li('과세표준', won(r.base), 'hi', r.taxed ? (r.bracket ? '적용세율 '+(r.bracket.rate*100)+'% · 누진공제 '+cm(r.bracket.ded)+'원' : '') : '50만원 미만 — 부과 제외')
+  + li('산출세액', won(r.gross), 'plus')
+  + (r.surcharge ? li('세대생략 할증', '+ '+won(r.surcharge), 'plus', '산출세액의 30%') : '')
+  + (r.giftCredit ? li('증여세액공제', '− '+won(r.giftCredit), 'minus', '사전증여 기납부세액'+(r.preTax>r.giftCap?' · 한도 초과분 '+cm(r.preTax-r.giftCredit)+'원은 공제 불가':'')) : '')
+  + li('신고세액공제 ('+(r.filingRate*100)+'%)', '− '+won(r.filingCredit), 'minus', '상속개시일이 속한 달의 말일부터 6개월 이내 신고 시')
+  + li('납부할 세액', won(r.payable), 'hi', '10원 미만 절사')
+  + li('상속인 실수령 재산', won(Math.max(0, r.estate - r.pub - r.debt - r.payable)), '', '상속재산에서 채무 · 공과금 · 세금을 뺀 금액')
+  + '</div></div>'
+  + '<div class="note" style="margin-top:12px">상속인 구성 <b>'+heirs+'</b> · 적용된 상속공제 합계 <b>'+korMoney(r.applied)+'</b>'
+  + (분납 ? '<br />납부세액이 커서 <b>'+분납+'</b>합니다.' : '')
+  + '</div>'
+  + (r.hasSp && r.spGet > r.spLimit && r.spLimit > 500000000
+      ? '<div class="note warn" style="margin-top:10px"><b>배우자 상속분 초과</b> — 배우자가 실제 상속받는 '+korMoney(r.spGet)+'은 공제 한도 '+korMoney(r.spLimit)+'을 넘습니다. 초과분은 공제되지 않으므로 상속분 조정을 검토해 보세요.</div>' : '')
+  + '</div>';
+}
+
 /* ══════════════════════════════════════════════════════════
    9. 부트
    ══════════════════════════════════════════════════════════ */
@@ -1502,8 +1872,45 @@ $('xDonee').addEventListener('change',()=>{ const c=DB.rel[$('xDonee').value+'>'
 $('xDonor').addEventListener('change',()=>{ const c=DB.rel[$('xDonee').value+'>'+$('xDonor').value]||{r:'asc',skip:0}; $('xRel').value=c.r; $('xSkip').checked=!!c.skip; });
 $('sAuto').addEventListener('change',()=>localStorage.setItem('giftAuto',$('sAuto').checked?'1':'0'));
 
+/* 일반 계산기 바인딩 */
+const NG_MONEY = ['ngAmt','ngPrior','ngPtax','ngWed','ngDebt','ngFee'];
+const NI_MONEY = ['niEstate','niFin','niFindebt','niSpget','niPublic','niDebt','niFuneral','niFuneral2','niHouse','niFee','niPre','niPrebase','niPretax','niPrebaseSp'];
+NG_MONEY.concat(NI_MONEY).forEach(id=>moneyInput($(id)));
+NG_MONEY.forEach(id=>$(id).addEventListener('input', renderGiftG));
+['ngDate','ngRel','ngMinor','ngSkip'].forEach(id=>$(id).addEventListener('change', renderGiftG));
+NI_MONEY.forEach(id=>$(id).addEventListener('input', renderInh));
+['niDate','niSpouse','niKids','niMinor','niElder','niDis','niSkip'].forEach(id=>{
+  $(id).addEventListener('change', renderInh); $(id).addEventListener('input', renderInh);
+});
+$('ngDate').value = todayISO();
+$('niDate').value = todayISO();
+renderGiftG(); renderInh();
+
 renderAll();
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+/* 앱 버전 표시 · 새 버전 자동 반영 */
+const APP_VERSION = '20260821-1447';
+$('pVer').textContent = 'v' + APP_VERSION;
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    reg.update();
+    setInterval(() => reg.update(), 60*60*1000);          // 1시간마다 새 버전 확인
+    reg.addEventListener('updatefound', () => {
+      const w = reg.installing;
+      if(!w) return;
+      w.addEventListener('statechange', () => {
+        // 이미 앱이 떠 있는 상태에서 새 버전이 설치되면 한 번만 자동 새로고침
+        if(w.state === 'installed' && navigator.serviceWorker.controller){
+          if(!sessionStorage.getItem('giftReloaded')){
+            sessionStorage.setItem('giftReloaded','1');
+            toast('새 버전을 불러옵니다…');
+            setTimeout(() => location.reload(), 600);
+          }
+        }
+      });
+    });
+  }).catch(()=>{});
+}
 </script>
 </body>
 </html>
