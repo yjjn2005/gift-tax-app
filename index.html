@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0d1117" />
+<title>유앤김 패밀리 · 증여 레지스트리</title>
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="apple-touch-icon" href="./icon-192.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<style>
+:root{
+  --bg:#0b0f14; --bg2:#111823; --card:#151d29; --card2:#1b2533;
+  --line:#26324a; --line2:#334259;
+  --txt:#e8edf5; --dim:#93a3bb; --dim2:#67788f;
+  --gold:#d4af62; --gold2:#f0d495; --goldDim:#8a7340;
+  --ok:#4ade80; --warn:#fbbf24; --bad:#f87171; --info:#60a5fa;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(1100px 620px at 12% -12%, #1a2436 0%, transparent 62%),
+    radial-gradient(900px 520px at 108% 6%, #1d2033 0%, transparent 58%),
+    var(--bg);
+  color:var(--txt);
+  font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:15px; line-height:1.6; min-height:100vh;
+  padding-bottom:96px;
+}
+a{color:var(--gold2)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 14px}
+
+/* ── 헤더 ─────────────────────────── */
+header{
+  padding:22px 0 16px; border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(212,175,98,.07),transparent);
+}
+.brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.crest{
+  width:44px;height:44px;border-radius:12px;flex:none;
+  background:linear-gradient(145deg,var(--gold2),var(--goldDim));
+  display:grid;place-items:center;color:#20170a;font-weight:800;font-size:17px;
+  box-shadow:0 6px 20px rgba(212,175,98,.28);
+}
+.brand h1{margin:0;font-size:19px;font-weight:800;letter-spacing:-.3px}
+.brand .sub{margin:1px 0 0;font-size:10.5px;color:var(--goldDim);letter-spacing:2.4px;font-weight:700}
+.hstat{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.pill{
+  font-size:11px;padding:5px 11px;border-radius:999px;
+  border:1px solid var(--line2);background:var(--card);color:var(--dim);white-space:nowrap
+}
+.pill b{color:var(--gold2);font-weight:700}
+.pill.ok{border-color:#2b5c3d;color:var(--ok)}
+.pill.bad{border-color:#5c2b2b;color:var(--bad)}
+
+/* ── 탭 ───────────────────────────── */
+nav{position:sticky;top:0;z-index:50;background:rgba(11,15,20,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;padding:8px 0}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex:none;padding:9px 15px;border-radius:10px;border:1px solid transparent;
+  background:transparent;color:var(--dim);font-size:13.5px;font-weight:600;cursor:pointer;
+  white-space:nowrap;font-family:inherit;transition:.15s
+}
+.tab:hover{color:var(--txt);background:var(--card)}
+.tab.on{background:linear-gradient(145deg,var(--gold2),var(--gold));color:#20170a;border-color:var(--gold)}
+
+/* ── 카드 ─────────────────────────── */
+section{display:none;padding-top:18px;animation:fade .22s ease}
+section.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.card.gold{border-color:var(--goldDim);background:linear-gradient(160deg,rgba(212,175,98,.09),var(--card) 55%)}
+.card h2{margin:0 0 4px;font-size:15.5px;font-weight:800;display:flex;align-items:center;gap:8px}
+.card h2 .ic{font-size:16px}
+.card .desc{margin:0 0 14px;font-size:12.5px;color:var(--dim2);line-height:1.55}
+.hr{height:1px;background:var(--line);margin:14px 0}
+
+/* ── 그리드 ───────────────────────── */
+.grid{display:grid;gap:10px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:720px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:430px){.g2.sm1,.g3,.g4{grid-template-columns:1fr}}
+
+/* ── 통계 타일 ────────────────────── */
+.stat{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:13px}
+.stat .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:.4px}
+.stat .v{font-size:19px;font-weight:800;margin-top:5px;letter-spacing:-.5px;word-break:keep-all}
+.stat .n{font-size:11px;color:var(--dim2);margin-top:3px}
+.stat.gold .v{color:var(--gold2)}
+.stat.bad .v{color:var(--bad)}
+.stat.ok .v{color:var(--ok)}
+.stat.info .v{color:var(--info)}
+
+/* ── 폼 ───────────────────────────── */
+label.f{display:block;font-size:11.5px;color:var(--dim);font-weight:700;margin:0 0 5px;letter-spacing:.2px}
+input,select,textarea,button{font-family:inherit;font-size:14px}
+input,select,textarea{
+  width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line2);
+  background:var(--bg2);color:var(--txt);outline:none;transition:.15s
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,98,.13)}
+input[type=date]{color-scheme:dark}
+input.money{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;letter-spacing:-.2px}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);cursor:pointer;padding:8px 0}
+.chk input{width:17px;height:17px;accent-color:var(--gold);flex:none}
+.btn{
+  padding:10px 16px;border-radius:10px;border:1px solid var(--line2);background:var(--card2);
+  color:var(--txt);font-weight:700;cursor:pointer;transition:.15s;font-size:13.5px
+}
+.btn:hover{border-color:var(--gold);color:var(--gold2)}
+.btn.pri{background:linear-gradient(145deg,var(--gold2),var(--gold));color:#20170a;border-color:var(--gold)}
+.btn.pri:hover{filter:brightness(1.08);color:#20170a}
+.btn.sm{padding:6px 11px;font-size:12px;border-radius:8px}
+.btn.danger:hover{border-color:var(--bad);color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ── 사람 칩 ──────────────────────── */
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{
+  padding:7px 13px;border-radius:999px;border:1px solid var(--line2);background:var(--card2);
+  color:var(--dim);font-size:13px;font-weight:700;cursor:pointer;transition:.15s
+}
+.chip:hover{border-color:var(--gold);color:var(--gold2)}
+.chip.on{background:linear-gradient(145deg,var(--gold2),var(--gold));color:#20170a;border-color:var(--gold)}
+
+/* ── 테이블 ───────────────────────── */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:12.8px;min-width:720px}
+th{
+  background:var(--bg2);color:var(--dim2);font-size:11px;font-weight:800;letter-spacing:.4px;
+  text-align:left;padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0
+}
+td{padding:10px 11px;border-bottom:1px solid rgba(38,50,74,.55);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(212,175,98,.045)}
+td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+tr.old td{color:var(--dim2)}
+tr.old td.d,tr.old td.num{text-decoration:line-through;text-decoration-color:var(--dim2)}
+tr.sum{background:rgba(212,175,98,.07)}
+tr.sum td{font-weight:800;color:var(--gold2);border-top:1px solid var(--goldDim)}
+.tag{
+  display:inline-block;padding:2px 8px;border-radius:6px;font-size:10.5px;font-weight:800;
+  border:1px solid var(--line2);color:var(--dim);white-space:nowrap
+}
+.tag.gift{border-color:#3a5680;color:#9ec5ff;background:rgba(96,165,250,.1)}
+.tag.loan{border-color:#7a5a2e;color:#f0c982;background:rgba(251,191,36,.09)}
+.tag.old{border-color:var(--line2);color:var(--dim2)}
+.tag.free{border-color:#2b5c3d;color:var(--ok);background:rgba(74,222,128,.09)}
+.tag.wed{border-color:#7a3a63;color:#f0a3d4;background:rgba(240,163,212,.09)}
+.tag.skip{border-color:#7a3a3a;color:#ffa3a3;background:rgba(248,113,113,.09)}
+
+/* ── 결과 패널 ────────────────────── */
+.res{border:1px solid var(--goldDim);border-radius:var(--r);overflow:hidden;margin-top:14px}
+.res-head{
+  padding:18px;text-align:center;
+  background:linear-gradient(150deg,rgba(212,175,98,.16),rgba(212,175,98,.04))
+}
+.res-head .k{font-size:11.5px;color:var(--dim);font-weight:700;letter-spacing:1px}
+.res-head .v{font-size:32px;font-weight:900;color:var(--gold2);letter-spacing:-1.2px;margin:6px 0 2px;line-height:1.15}
+.res-head .v.zero{color:var(--ok)}
+.res-head .n{font-size:12.5px;color:var(--dim)}
+.br{background:var(--card2)}
+.br .li{display:flex;justify-content:space-between;gap:12px;padding:9px 16px;border-bottom:1px solid rgba(38,50,74,.5);font-size:13px}
+.br .li:last-child{border-bottom:none}
+.br .li .lb{color:var(--dim)}
+.br .li .vl{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.br .li.hi{background:rgba(212,175,98,.07)}
+.br .li.hi .lb,.br .li.hi .vl{color:var(--gold2);font-weight:800}
+.br .li.minus .vl{color:var(--ok)}
+.br .li.plus .vl{color:var(--bad)}
+.br .li small{display:block;color:var(--dim2);font-size:11px;font-weight:500}
+
+/* ── 게이지 ───────────────────────── */
+.gg{margin:10px 0}
+.gg .top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
+.gg .top .l{color:var(--dim);font-weight:700}
+.gg .top .r{font-variant-numeric:tabular-nums;font-weight:700}
+.gg .bar{height:9px;border-radius:99px;background:var(--bg2);overflow:hidden;border:1px solid var(--line)}
+.gg .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .35s}
+.gg .fill.full{background:linear-gradient(90deg,#dc6b6b,#f87171)}
+.gg .fill.free{background:linear-gradient(90deg,#34a866,#4ade80)}
+
+/* ── 알림 ─────────────────────────── */
+.note{
+  border-radius:11px;padding:11px 13px;font-size:12.3px;line-height:1.6;
+  border:1px solid var(--line2);background:var(--bg2);color:var(--dim)
+}
+.note.warn{border-color:#6b5420;background:rgba(251,191,36,.08);color:#f3d79a}
+.note.ok{border-color:#2b5c3d;background:rgba(74,222,128,.07);color:#a5e6bd}
+.note.bad{border-color:#6b2f2f;background:rgba(248,113,113,.08);color:#f5b5b5}
+.note b{color:inherit;font-weight:800}
+
+/* ── 모달 ─────────────────────────── */
+.mask{position:fixed;inset:0;background:rgba(3,6,10,.78);backdrop-filter:blur(5px);z-index:200;display:none;overflow-y:auto;padding:20px 12px}
+.mask.on{display:block}
+.modal{max-width:520px;margin:0 auto;background:var(--card);border:1px solid var(--line2);border-radius:16px;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+.modal h3{margin:0 0 14px;font-size:16px;font-weight:800}
+
+/* ── 토스트 ───────────────────────── */
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,26px);z-index:400;opacity:0;transition:.28s;pointer-events:none}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#toast .t{background:var(--card2);border:1px solid var(--gold);color:var(--gold2);padding:11px 20px;border-radius:99px;font-size:13.5px;font-weight:700;box-shadow:0 10px 34px rgba(0,0,0,.5)}
+#toast.err .t{border-color:var(--bad);color:var(--bad)}
+
+footer{padding:22px 0 12px;text-align:center;font-size:11px;color:var(--dim2);line-height:1.7}
+.mono{font-variant-numeric:tabular-nums}
+.kor{font-size:12px;color:var(--dim2);font-weight:600}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <div class="brand">
+    <div class="crest">Y&amp;K</div>
+    <div>
+      <h1>유앤김 패밀리 증여 레지스트리</h1>
+      <p class="sub">GIFT &amp; LOAN REGISTRY · TAX ENGINE</p>
+    </div>
+    <div class="hstat">
+      <span class="pill" id="pSync">동기화 없음</span>
+      <span class="pill">수증자 <b id="pDonee">0</b>명</span>
+      <span class="pill">이력 <b id="pCnt">0</b>건</span>
+    </div>
+  </div>
+</div></header>
+
+<nav><div class="wrap"><div class="tabs">
+  <button class="tab on" data-t="dash">대시보드</button>
+  <button class="tab" data-t="hist">인별 이력</button>
+  <button class="tab" data-t="calc">증여세 계산</button>
+  <button class="tab" data-t="rev">0원 역산</button>
+  <button class="tab" data-t="plan">무세 캘린더</button>
+  <button class="tab" data-t="set">설정 · 동기화</button>
+</div></div></nav>
+
+<div class="wrap">
+
+<!-- ══════════ 대시보드 ══════════ -->
+<section id="dash" class="on">
+  <div class="card gold">
+    <h2><span class="ic">◆</span> 가문 자산이전 총괄</h2>
+    <p class="desc">10년 합산 기준일 이후 증여만 합산과세 대상입니다. 대여(금전소비대차)는 증여와 별도로 집계됩니다.</p>
+    <div class="grid g4" id="dashStats"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="ic">◆</span> 수증자별 현황</h2>
+    <p class="desc">카드를 누르면 해당 인물의 상세 이력으로 이동합니다. 잔여 공제는 오늘 기준 · 직계존속 그룹 기준입니다.</p>
+    <div class="grid g2 sm1" id="dashPeople"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="ic">◆</span> 향후 예정 · 최근 등록</h2>
+    <div class="tw"><table id="dashRecent"></table></div>
+  </div>
+</section>
+
+<!-- ══════════ 인별 이력 ══════════ -->
+<section id="hist">
+  <div class="card">
+    <h2><span class="ic">◆</span> 수증자 선택</h2>
+    <div class="chips" id="histChips"></div>
+    <div class="hr"></div>
+    <div class="row">
+      <button class="btn pri sm" onclick="openGift()">＋ 이력 추가</button>
+      <button class="btn sm" onclick="exportCSV()">CSV 내보내기</button>
+      <span style="flex:1"></span>
+      <span class="kor" id="histWho"></span>
+    </div>
+  </div>
+
+  <div class="grid g4" id="histStats"></div>
+
+  <div class="card">
+    <h2><span class="ic">◆</span> 증여 · 대여 이력</h2>
+    <p class="desc">행을 누르면 수정할 수 있습니다. 회색·취소선은 10년 합산기간이 지나 합산대상에서 제외된 건입니다.</p>
+    <div class="tw"><table id="histTable"></table></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="ic">◆</span> 증여재산공제 잔여 한도 <span class="kor" id="histAsOf"></span></h2>
+    <p class="desc">관계 그룹별 10년 누적 한도 대비 사용액입니다. 잔여액까지는 증여세가 발생하지 않습니다.</p>
+    <div id="histGauges"></div>
+  </div>
+</section>
+
+<!-- ══════════ 증여세 계산 ══════════ -->
+<section id="calc">
+  <div class="card gold">
+    <h2><span class="ic">◆</span> 추가 수증 시 증여세 자동계산</h2>
+    <p class="desc">증여일자와 금액을 넣으면 10년 합산 · 증여재산공제 · 세대생략 할증 · 기납부세액공제 · 신고세액공제를 모두 반영해 즉시 계산합니다.</p>
+    <div class="grid g2 sm1">
+      <div><label class="f">수증자 (받는 사람)</label><select id="cDonee"></select></div>
+      <div><label class="f">증여자 (주는 사람)</label><select id="cDonor"></select></div>
+      <div><label class="f">증여일자</label><input type="date" id="cDate" /></div>
+      <div><label class="f">증여재산가액 (원)</label><input class="money" id="cAmt" inputmode="numeric" placeholder="0" /></div>
+    </div>
+    <div class="row" style="margin-top:6px">
+      <button class="btn sm" onclick="addAmt(10000000)">+1천만</button>
+      <button class="btn sm" onclick="addAmt(50000000)">+5천만</button>
+      <button class="btn sm" onclick="addAmt(100000000)">+1억</button>
+      <button class="btn sm" onclick="addAmt(500000000)">+5억</button>
+      <button class="btn sm danger" onclick="setAmt(0)">초기화</button>
+    </div>
+    <div class="grid g2 sm1" style="margin-top:8px">
+      <label class="chk"><input type="checkbox" id="cWed" /> 혼인 · 출산 증여재산공제 적용 (직계존속 · 평생 1억)</label>
+      <label class="chk"><input type="checkbox" id="cSkip" /> 세대생략 할증 적용 (조부모 → 손자녀 등)</label>
+    </div>
+    <div id="cRelNote" style="margin-top:8px"></div>
+    <div id="cResult"></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn pri" onclick="saveFromCalc()">이 조건으로 이력에 등록</button>
+      <button class="btn" onclick="goRevFromCalc()">0원 되는 금액 · 날짜 역산 →</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="ic">◆</span> 10년 합산 대상 내역</h2>
+    <p class="desc">동일인(직계존속은 그 배우자를 포함)으로부터 증여일 전 10년 이내에 받은 증여는 합산 후 누진세율이 적용됩니다.</p>
+    <div class="tw"><table id="cPriors"></table></div>
+  </div>
+</section>
+
+<!-- ══════════ 0원 역산 ══════════ -->
+<section id="rev">
+  <div class="card gold">
+    <h2><span class="ic">◆</span> 증여세 0원 역산기</h2>
+    <p class="desc">두 방향으로 거꾸로 추계합니다. ① 날짜를 정하면 → 세금 0원이 되는 최대 금액 ② 금액을 정하면 → 세금 0원이 되는 가장 빠른 년·월·일</p>
+    <div class="grid g2 sm1">
+      <div><label class="f">수증자</label><select id="rDonee"></select></div>
+      <div><label class="f">증여자</label><select id="rDonor"></select></div>
+    </div>
+    <label class="chk" style="margin-top:4px"><input type="checkbox" id="rWed" /> 혼인 · 출산 증여재산공제 함께 적용</label>
+  </div>
+
+  <div class="card">
+    <h2><span class="ic">①</span> 날짜 → 세금 0원 최대 금액</h2>
+    <p class="desc">해당 날짜에 증여할 때 증여세가 한 푼도 나오지 않는 최대 증여액을 원 단위로 역산합니다.</p>
+    <div class="grid g2 sm1">
+      <div><label class="f">증여 예정일</label><input type="date" id="rDate" /></div>
+      <div style="display:flex;align-items:flex-end"><button class="btn pri" style="width:100%" onclick="runRevAmount()">최대 무세 금액 역산</button></div>
+    </div>
+    <div id="rAmtOut"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="ic">②</span> 금액 → 세금 0원 되는 년·월·일</h2>
+    <p class="desc">과거 증여가 10년 합산기간을 벗어나 공제 한도가 되살아나는 시점을 찾아, 해당 금액이 무세가 되는 가장 빠른 날짜를 역산합니다.</p>
+    <div class="grid g3">
+      <div><label class="f">증여 희망액 (원)</label><input class="money" id="rAmt" inputmode="numeric" placeholder="0" /></div>
+      <div><label class="f">탐색 시작일</label><input type="date" id="rFrom" /></div>
+      <div style="display:flex;align-items:flex-end"><button class="btn pri" style="width:100%" onclick="runRevDate()">0원 되는 날짜 역산</button></div>
+    </div>
+    <div class="row" style="margin-top:6px">
+      <button class="btn sm" onclick="setRAmt(50000000)">5천만</button>
+      <button class="btn sm" onclick="setRAmt(100000000)">1억</button>
+      <button class="btn sm" onclick="setRAmt(150000000)">1억5천</button>
+      <button class="btn sm" onclick="setRAmt(600000000)">6억</button>
+    </div>
+    <div id="rDateOut"></div>
+  </div>
+</section>
+
+<!-- ══════════ 무세 캘린더 ══════════ -->
+<section id="plan">
+  <div class="card gold">
+    <h2><span class="ic">◆</span> 무세 증여 캘린더</h2>
+    <p class="desc">공제 한도가 되살아나는 분기점마다 "그날 증여하면 세금 없이 줄 수 있는 최대 금액"을 미리 계산해 시간표로 보여줍니다.</p>
+    <div class="grid g3">
+      <div><label class="f">수증자</label><select id="pDoneeSel"></select></div>
+      <div><label class="f">증여자</label><select id="pDonorSel"></select></div>
+      <div style="display:flex;align-items:flex-end"><button class="btn pri" style="width:100%" onclick="runPlan()">캘린더 생성</button></div>
+    </div>
+    <label class="chk"><input type="checkbox" id="pWed" /> 혼인 · 출산 증여재산공제 함께 적용</label>
+  </div>
+  <div class="card"><div class="tw"><table id="planTable"></table></div><div id="planNote" style="margin-top:12px"></div></div>
+</section>
+
+<!-- ══════════ 설정 ══════════ -->
+<section id="set">
+  <div class="card gold">
+    <h2><span class="ic">◆</span> 모든 디바이스 동기화</h2>
+    <p class="desc">동일한 동기화 코드를 입력하면 PC · 아이폰 · 아이패드 어디서든 같은 데이터를 씁니다. 클라우드플레어 KV에 저장됩니다.</p>
+    <div class="grid g2 sm1">
+      <div><label class="f">동기화 코드 (4~40자 영문·숫자)</label><input id="sCode" placeholder="예: YOOKIM2026" autocapitalize="characters" /></div>
+      <div style="display:flex;align-items:flex-end;gap:8px">
+        <button class="btn pri" style="flex:1" onclick="pushSync()">↑ 올리기</button>
+        <button class="btn" style="flex:1" onclick="pullSync()">↓ 내려받기</button>
+      </div>
+    </div>
+    <label class="chk"><input type="checkbox" id="sAuto" /> 변경할 때마다 자동으로 올리기</label>
+    <div id="sMsg" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="ic">◆</span> 가족 · 관계 설정</h2>
+    <p class="desc"><b style="color:var(--warn)">중요:</b> 증여재산공제 한도와 세대생략 할증은 관계에 따라 달라집니다. 아래 값을 반드시 실제 관계로 확인·수정하세요. 생년월일을 넣으면 미성년자 공제(2천만원)가 자동 적용됩니다.</p>
+    <div class="row" style="margin-bottom:10px">
+      <button class="btn sm pri" onclick="openPerson()">＋ 인물 추가</button>
+      <button class="btn sm" onclick="openRel()">＋ 관계 추가 · 수정</button>
+    </div>
+    <div class="tw"><table id="pplTable"></table></div>
+    <div class="hr"></div>
+    <div class="tw"><table id="relTable"></table></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="ic">◆</span> 기준 · 데이터</h2>
+    <div class="grid g2 sm1">
+      <div><label class="f">10년 합산 기준일 (이전 증여는 합산 제외 표시)</label><input type="date" id="sBase" /></div>
+      <div style="display:flex;align-items:flex-end"><button class="btn" style="width:100%" onclick="saveBase()">기준일 저장</button></div>
+    </div>
+    <div class="hr"></div>
+    <div class="row">
+      <button class="btn" onclick="backupJSON()">백업 파일 저장(JSON)</button>
+      <button class="btn" onclick="document.getElementById('restoreFile').click()">백업 복원</button>
+      <input type="file" id="restoreFile" accept="application/json" style="display:none" onchange="restoreJSON(this)" />
+      <button class="btn" onclick="exportCSV(true)">전체 CSV 내보내기</button>
+      <button class="btn danger" onclick="resetSeed()">엑셀 원본으로 초기화</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="ic">◆</span> 적용 세법 요약</h2>
+    <div class="note">
+      <b>세율</b> 1억 이하 10% · 5억 이하 20%(누진공제 1천만) · 10억 이하 30%(6천만) · 30억 이하 40%(1.6억) · 30억 초과 50%(4.6억)<br />
+      <b>증여재산공제(10년 합산)</b> 배우자 6억 · 직계존속 5천만(미성년 2천만) · 직계비속 5천만 · 기타친족 1천만 · 타인 0<br />
+      <b>혼인 · 출산 증여재산공제</b> 2024.1.1 이후 직계존속 증여분, 혼인·출산 통합 평생 1억 (일반공제와 별도)<br />
+      <b>10년 합산</b> 증여일 전 10년 내 동일인(직계존속은 그 배우자 포함)에게 받은 증여 합계가 1천만원 이상이면 가산<br />
+      <b>세대생략 할증</b> 산출세액의 30% (수증자가 미성년자이고 증여재산가액 20억 초과 시 40%)<br />
+      <b>신고세액공제</b> 2016년 이전 10% · 2017년 7% · 2018년 5% · 2019년 이후 3%<br />
+      <b>기타</b> 과세표준 50만원 미만은 부과하지 않으며, 납부세액은 10원 미만 절사합니다.
+    </div>
+  </div>
+</section>
+
+<footer>
+  본 앱은 유앤김 패밀리 내부 자산관리 참고용입니다.<br />
+  세액 · 과세여부의 최종 판단은 반드시 세무전문가의 확인을 거치시기 바랍니다.
+</footer>
+</div>
+
+<!-- ── 모달: 이력 ── -->
+<div class="mask" id="mGift"><div class="modal">
+  <h3 id="mGiftTitle">이력 추가</h3>
+  <div class="grid g2 sm1">
+    <div><label class="f">구분</label><select id="gKind"><option value="gift">증여</option><option value="loan">대여(금전소비대차)</option></select></div>
+    <div><label class="f">수증자 / 차용인</label><select id="gDonee"></select></div>
+    <div><label class="f">증여자 / 대여자</label><select id="gDonor"></select></div>
+    <div><label class="f">거래일자</label><input type="date" id="gDate" /></div>
+    <div><label class="f">금액 (원)</label><input class="money" id="gAmt" inputmode="numeric" /></div>
+    <div><label class="f">세금 (원) · 비우면 자동계산</label><input class="money" id="gTax" inputmode="numeric" placeholder="자동계산" /></div>
+    <div><label class="f">유형</label><input id="gType" placeholder="현금증여 / 토지증여 / 주식증여 …" /></div>
+    <div><label class="f">비고</label><input id="gNote" placeholder="메모" /></div>
+  </div>
+  <label class="chk"><input type="checkbox" id="gWed" /> 혼인 · 출산 증여재산공제 적용 건</label>
+  <label class="chk"><input type="checkbox" id="gFiled" /> 실제 신고·납부 완료 (세액을 고정하고 재계산하지 않음)</label>
+  <label class="chk"><input type="checkbox" id="gNosum" /> 합산 제외 — 증여신고 대상이 아니거나 합산과세에서 빼는 건</label>
+  <div id="gPreview" style="margin-top:6px"></div>
+  <div class="row" style="margin-top:14px">
+    <button class="btn pri" onclick="saveGift()">저장</button>
+    <button class="btn" onclick="closeM('mGift')">취소</button>
+    <span style="flex:1"></span>
+    <button class="btn danger" id="gDel" onclick="delGift()">삭제</button>
+  </div>
+</div></div>
+
+<!-- ── 모달: 인물 ── -->
+<div class="mask" id="mPerson"><div class="modal">
+  <h3 id="mPersonTitle">인물 추가</h3>
+  <div class="grid g2 sm1">
+    <div><label class="f">이름</label><input id="pName" /></div>
+    <div><label class="f">생년월일 (미성년 공제 판정)</label><input type="date" id="pBirth" /></div>
+    <div><label class="f">배우자 (동일인 합산 판정)</label><input id="pSpouse" placeholder="예: 김희연" /></div>
+    <div><label class="f">혼인신고일 (혼인공제 판정)</label><input type="date" id="pMarry" /></div>
+  </div>
+  <label class="chk"><input type="checkbox" id="pIsDonee" /> 수증자 목록에 표시</label>
+  <div class="row" style="margin-top:14px">
+    <button class="btn pri" onclick="savePerson()">저장</button>
+    <button class="btn" onclick="closeM('mPerson')">취소</button>
+    <span style="flex:1"></span>
+    <button class="btn danger" id="pDel" onclick="delPerson()">삭제</button>
+  </div>
+</div></div>
+
+<!-- ── 모달: 관계 ── -->
+<div class="mask" id="mRel"><div class="modal">
+  <h3>관계 설정</h3>
+  <p class="desc" style="color:var(--dim2);font-size:12.5px">수증자 입장에서 증여자가 어떤 관계인지 지정합니다.</p>
+  <div class="grid g2 sm1">
+    <div><label class="f">수증자</label><select id="xDonee"></select></div>
+    <div><label class="f">증여자</label><select id="xDonor"></select></div>
+  </div>
+  <label class="f" style="margin-top:10px">관계</label>
+  <select id="xRel">
+    <option value="asc">직계존속 (부모 · 조부모 · 외조부모)</option>
+    <option value="spouse">배우자</option>
+    <option value="desc">직계비속 (자녀 · 손자녀)</option>
+    <option value="rel">기타친족 (6촌 이내 혈족 · 4촌 이내 인척)</option>
+    <option value="other">타인</option>
+  </select>
+  <label class="chk"><input type="checkbox" id="xSkip" /> 세대생략 (조부모 → 손자녀 등, 산출세액 30% 할증)</label>
+  <div class="row" style="margin-top:14px">
+    <button class="btn pri" onclick="saveRel()">저장</button>
+    <button class="btn" onclick="closeM('mRel')">취소</button>
+  </div>
+</div></div>
+
+<div id="toast"><div class="t"></div></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   1. 시드 데이터 — 유앤김_패밀리_증여이력_관리럭셔리에디션.xlsx (2026.08.04 기준)
+   ══════════════════════════════════════════════════════════ */
+const SEED = {
+  version: 1,
+  base: '2016-08-03',
+  donees: ['유재진','김희연','유해인','유지원','유태현','남유준'],
+  people: {
+    '유재진': { birth:'', spouse:'김희연', marry:'' },
+    '김희연': { birth:'', spouse:'유재진', marry:'' },
+    '유해인': { birth:'', spouse:'',       marry:'2024-11-02' },
+    '유지원': { birth:'', spouse:'',       marry:'' },
+    '유태현': { birth:'', spouse:'',       marry:'2026-10-07' },
+    '남유준': { birth:'', spouse:'',       marry:'' },
+    '유창노': { birth:'', spouse:'',       marry:'' },
+    '김세화': { birth:'', spouse:'',       marry:'' },
+    '유태로': { birth:'', spouse:'',       marry:'' }
+  },
+  rel: {
+    '유재진>김희연':{r:'spouse',skip:0}, '유재진>유창노':{r:'asc',skip:0}, '유재진>유태로':{r:'rel',skip:0},
+    '김희연>유재진':{r:'spouse',skip:0}, '김희연>유창노':{r:'asc',skip:0},
+    '유해인>유창노':{r:'asc',skip:1}, '유해인>유재진':{r:'asc',skip:0}, '유해인>김희연':{r:'asc',skip:0}, '유해인>김세화':{r:'rel',skip:0},
+    '유지원>유창노':{r:'asc',skip:1}, '유지원>유재진':{r:'asc',skip:0}, '유지원>김희연':{r:'asc',skip:0}, '유지원>김세화':{r:'rel',skip:0},
+    '유태현>유창노':{r:'asc',skip:1}, '유태현>유재진':{r:'asc',skip:0}, '유태현>김희연':{r:'asc',skip:0}, '유태현>김세화':{r:'rel',skip:0},
+    '남유준>유재진':{r:'asc',skip:1}, '남유준>김희연':{r:'asc',skip:1}, '남유준>유해인':{r:'asc',skip:0}
+  },
+  gifts: [
+    /* 유재진 */
+    {id:'s01',kind:'gift',donee:'유재진',donor:'김희연',date:'2014-07-01',amount:350000000,tax:0,type:'부부간 아파트지분',note:'50%지분 / 합산 제외 처리(공동명의 취득분)',wed:0,filed:1,nosum:1},
+    {id:'s02',kind:'gift',donee:'유재진',donor:'유창노',date:'2017-05-25',amount:445811775,tax:64320990,type:'토지증여',note:'월산20-5 / 19-9 / 19-12',wed:0,filed:1},
+    {id:'s03',kind:'gift',donee:'유재진',donor:'유창노',date:'2020-10-13',amount:56080000,tax:10879520,type:'토지증여',note:'월산리20-13',wed:0,filed:1},
+    {id:'s04',kind:'gift',donee:'유재진',donor:'김희연',date:'2022-08-12',amount:94617840,tax:0,type:'주식증여(부부간)',note:'애플·MSFT·구글·소프트뱅크 / 양도세 이월과세 1년',wed:0,filed:1},
+    {id:'s05',kind:'gift',donee:'유재진',donor:'유태로',date:'2022-09-13',amount:1000000000,tax:229890000,type:'주식증여',note:'당일종가 기준',wed:0,filed:1},
+    {id:'s06',kind:'gift',donee:'유재진',donor:'김희연',date:'2022-09-21',amount:332865000,tax:0,type:'토지증여(부부간)',note:'월산리556 / 양도세 이월과세 10년(2023.01.01~)',wed:0,filed:1},
+    {id:'s07',kind:'loan',donee:'유재진',donor:'유창노',date:'2026-05-01',amount:50000000,tax:0,type:'금전소비대차(차용증)',note:'일자 미정(2026.05) · 무이자시 인정이자 약 230만원 — 비과세기준 1천만원 이내 추정 · 차용증 권장',wed:0,filed:1},
+    /* 김희연 */
+    {id:'s08',kind:'gift',donee:'김희연',donor:'유창노',date:'2017-05-25',amount:445811775,tax:64320990,type:'토지증여',note:'월산20-5 / 19-9 / 19-12',wed:0,filed:1},
+    {id:'s09',kind:'gift',donee:'김희연',donor:'유재진',date:'2018-07-31',amount:70000000,tax:0,type:'현금증여(부부간)',note:'',wed:0,filed:1},
+    {id:'s10',kind:'gift',donee:'김희연',donor:'유창노',date:'2020-10-13',amount:56080000,tax:10879520,type:'토지증여',note:'월산리20-13',wed:0,filed:1},
+    {id:'s11',kind:'gift',donee:'김희연',donor:'유재진',date:'2021-10-28',amount:137000000,tax:0,type:'주식증여(부부간)',note:'',wed:0,filed:1},
+    {id:'s12',kind:'gift',donee:'김희연',donor:'유재진',date:'2024-08-12',amount:65534480,tax:0,type:'주식증여(부부간)',note:'엔비디아 440주 / 양도세 이월과세 1년(2025.01.01~)',wed:0,filed:1},
+    /* 유해인 */
+    {id:'s13',kind:'gift',donee:'유해인',donor:'유창노',date:'2017-05-25',amount:267487065,tax:40498370,type:'토지증여',note:'월산20-5 / 19-9 / 19-12',wed:0,filed:1},
+    {id:'s14',kind:'gift',donee:'유해인',donor:'김세화',date:'2017-06-01',amount:10000000,tax:0,type:'현금증여(친족)',note:'',wed:0,filed:1},
+    {id:'s15',kind:'gift',donee:'유해인',donor:'유재진',date:'2017-07-30',amount:40000000,tax:3800000,type:'현금증여',note:'',wed:0,filed:1},
+    {id:'s16',kind:'gift',donee:'유해인',donor:'유창노',date:'2018-07-31',amount:128980400,tax:38666403,type:'토지증여',note:'월산리20-13 / 신고세액은 연부연납 가산금 포함 실납부액',wed:0,filed:1},
+    {id:'s17',kind:'gift',donee:'유해인',donor:'김희연',date:'2024-11-02',amount:100000000,tax:0,type:'결혼증여',note:'비과세(혼인증여재산공제)',wed:1,filed:1},
+    /* 유지원 */
+    {id:'s18',kind:'gift',donee:'유지원',donor:'유창노',date:'2017-05-25',amount:267487065,tax:40498370,type:'토지증여',note:'월산20-5 / 19-9 / 19-12',wed:0,filed:1},
+    {id:'s19',kind:'gift',donee:'유지원',donor:'김세화',date:'2017-06-01',amount:10000000,tax:0,type:'현금증여(친족)',note:'',wed:0,filed:1},
+    {id:'s20',kind:'gift',donee:'유지원',donor:'유재진',date:'2018-07-31',amount:40000000,tax:3800000,type:'현금증여',note:'',wed:0,filed:1},
+    {id:'s21',kind:'gift',donee:'유지원',donor:'유창노',date:'2020-11-02',amount:128980400,tax:38666403,type:'토지증여',note:'월산리20-13 / 신고세액은 연부연납 가산금 포함 실납부액',wed:0,filed:1},
+    /* 유태현 */
+    {id:'s22',kind:'gift',donee:'유태현',donor:'유창노',date:'2017-05-25',amount:356649420,tax:69311820,type:'토지증여',note:'월산20-5 / 19-9 / 19-12 / 유재진수증 완납',wed:0,filed:1},
+    {id:'s23',kind:'gift',donee:'유태현',donor:'김세화',date:'2017-06-01',amount:10000000,tax:0,type:'현금증여(친족)',note:'',wed:0,filed:1},
+    {id:'s24',kind:'gift',donee:'유태현',donor:'유재진',date:'2018-07-31',amount:70000000,tax:6650000,type:'현금증여',note:'유재진수증 완납',wed:0,filed:1},
+    {id:'s25',kind:'gift',donee:'유태현',donor:'유창노',date:'2020-11-02',amount:130105600,tax:39706360,type:'토지증여',note:'월산리20-13 / 연부연납 완납 · 신고세액은 가산금 포함 실납부액',wed:0,filed:1},
+    {id:'s26',kind:'loan',donee:'유태현',donor:'유창노',date:'2026-05-13',amount:50000000,tax:0,type:'금전소비대차(차용증)',note:'차용증 작성 권장',wed:0,filed:1},
+    {id:'s27',kind:'gift',donee:'유태현',donor:'유재진',date:'2026-10-07',amount:100000000,tax:0,type:'결혼증여',note:'비과세(혼인증여재산공제 한도 내 추정)',wed:1,filed:0},
+    {id:'s28',kind:'loan',donee:'유태현',donor:'유재진',date:'2026-10-07',amount:200000000,tax:0,type:'금전소비대차(차용증)',note:'차용증·적정이자율 검토 권장',wed:0,filed:0},
+    /* 남유준 */
+    {id:'s29',kind:'gift',donee:'남유준',donor:'유재진',date:'2026-02-28',amount:6000000,tax:0,type:'현금증여',note:'신규 등록(2026.08) · 증여재산공제 한도 확인 권장',wed:0,filed:0}
+  ]
+};
+
+/* ══════════════════════════════════════════════════════════
+   2. 유틸
+   ══════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const cm = n => (Math.round(n||0)).toLocaleString('ko-KR');
+const won = n => cm(n) + '원';
+const RELNAME = { spouse:'배우자', asc:'직계존속', desc:'직계비속', rel:'기타친족', other:'타인' };
+
+function korMoney(n){
+  n = Math.round(n||0);
+  if(!n) return '0원';
+  const sign = n<0 ? '-' : ''; n = Math.abs(n);
+  const eok = Math.floor(n/100000000), man = Math.floor((n%100000000)/10000), rest = n%10000;
+  let s = '';
+  if(eok) s += eok + '억 ';
+  if(man) s += cm(man) + '만 ';
+  if(rest || !s) s += cm(rest);
+  return sign + s.trim() + '원';
+}
+function todayISO(){ const d=new Date(); return iso(new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()))); }
+function iso(d){ return d.toISOString().slice(0,10); }
+function parseD(s){ const [y,m,d]=String(s||'').split('-').map(Number); return {y,m,d}; }
+function mkD(y,m,d){
+  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  return iso(new Date(Date.UTC(y, m-1, Math.min(d,last))));
+}
+function addYears(ds,n){ const p=parseD(ds); if(!p.y) return ds; return mkD(p.y+n,p.m,p.d); }
+function addDays(ds,n){ const p=parseD(ds); if(!p.y) return ds; const dt=new Date(Date.UTC(p.y,p.m-1,p.d)); dt.setUTCDate(dt.getUTCDate()+n); return iso(dt); }
+function fmtD(ds){ return ds ? ds.replace(/-/g,'.') : '-'; }
+function toast(msg, err){
+  const t=$('toast'); t.querySelector('.t').textContent=msg;
+  t.className = 'on' + (err?' err':''); clearTimeout(t._h);
+  t._h=setTimeout(()=>t.className='',2400);
+}
+function moneyInput(el){
+  el.addEventListener('input',()=>{
+    const p=el.selectionStart, len=el.value.length;
+    const raw=el.value.replace(/[^0-9]/g,'');
+    el.value = raw ? Number(raw).toLocaleString('ko-KR') : '';
+    const d=el.value.length-len; try{ el.setSelectionRange(Math.max(0,p+d),Math.max(0,p+d)); }catch(e){}
+  });
+}
+const getMoney = el => Number(String(el.value||'').replace(/[^0-9]/g,'')) || 0;
+const setMoney = (el,v) => { el.value = v ? Number(v).toLocaleString('ko-KR') : ''; };
+
+/* ══════════════════════════════════════════════════════════
+   3. 상태
+   ══════════════════════════════════════════════════════════ */
+let DB = load();
+let curDonee = DB.donees[0] || '';
+let editId = null, editPerson = null;
+
+function load(){
+  try{
+    const raw = localStorage.getItem('giftDB');
+    if(raw){ const d=JSON.parse(raw); if(d && d.gifts) return d; }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(SEED));
+}
+function save(silent){
+  DB.updatedAt = new Date().toISOString();
+  localStorage.setItem('giftDB', JSON.stringify(DB));
+  if($('sAuto') && $('sAuto').checked && localStorage.getItem('giftCode')) pushSync(true);
+  if(!silent) renderAll();
+}
+
+/* ══════════════════════════════════════════════════════════
+   4. 세액 엔진  ★검증 완료★
+   ══════════════════════════════════════════════════════════ */
+const BRACKETS = [
+  { lim: 100000000,  rate:0.10, ded:0 },
+  { lim: 500000000,  rate:0.20, ded:10000000 },
+  { lim: 1000000000, rate:0.30, ded:60000000 },
+  { lim: 3000000000, rate:0.40, ded:160000000 },
+  { lim: Infinity,   rate:0.50, ded:460000000 }
+];
+function grossTax(base){
+  if(base <= 0) return 0;
+  for(const b of BRACKETS) if(base <= b.lim) return base*b.rate - b.ded;
+  return 0;
+}
+function bracketOf(base){
+  if(base<=0) return null;
+  for(const b of BRACKETS) if(base<=b.lim) return b;
+  return null;
+}
+/* 신고세액공제율 (연도별) */
+function filingRate(date){
+  const y = Number(String(date).slice(0,4));
+  if(y <= 2016) return 0.10;
+  if(y === 2017) return 0.07;
+  if(y === 2018) return 0.05;
+  return 0.03;
+}
+const floor10 = x => Math.floor(Math.max(0,x)/10)*10;
+
+function relOf(donee, donor){
+  return DB.rel[donee+'>'+donor] || { r:'other', skip:0 };
+}
+/* 미성년 판정: 증여일 기준 만 19세 미만 */
+function isMinor(name, date){
+  const b = (DB.people[name]||{}).birth;
+  if(!b) return false;
+  return date < addYears(b, 19);
+}
+/* 동일인 합산 그룹: 증여자 + (직계존속인 경우) 그 배우자 */
+function aggGroup(donee, donor){
+  const g = [donor];
+  if(relOf(donee,donor).r === 'asc'){
+    const sp = (DB.people[donor]||{}).spouse;
+    if(sp && sp !== donor && !g.includes(sp)) g.push(sp);
+  }
+  return g;
+}
+function deductLimit(r, donee, date){
+  if(r === 'spouse') return 600000000;
+  if(r === 'asc')    return isMinor(donee,date) ? 20000000 : 50000000;
+  if(r === 'desc')   return 50000000;
+  if(r === 'rel')    return 10000000;
+  return 0;
+}
+/* 어떤 건에 실제 적용된 혼인·출산공제액 (평생 1억, 날짜순 선착) */
+function wedApplied(g){
+  if(!g.wed) return 0;
+  const list = DB.gifts.filter(x=>x.kind==='gift' && x.donee===g.donee && x.wed)
+                       .sort((a,b)=> a.date<b.date?-1:(a.date>b.date?1:(a.id<b.id?-1:1)));
+  let used = 0;
+  for(const x of list){
+    const a = Math.min(x.amount, Math.max(0, 100000000-used));
+    if(x.id === g.id) return a;
+    used += a;
+  }
+  return 0;
+}
+function wedUsedBefore(donee, date, excludeId){
+  const list = DB.gifts.filter(x=>x.kind==='gift' && x.donee===donee && x.wed && x.id!==excludeId && x.date < date)
+                       .sort((a,b)=> a.date<b.date?-1:1);
+  let used = 0;
+  for(const x of list) used += Math.min(x.amount, Math.max(0,100000000-used));
+  return Math.min(used, 100000000);
+}
+
+/**
+ * 증여세 계산
+ * @param {object} i {donee, donor, date, amount, wed, skip, excludeId}
+ */
+function computeTax(i){
+  const donee=i.donee, donor=i.donor, date=i.date;
+  const amount = Math.max(0, Math.round(i.amount||0));
+  const rinfo = relOf(donee,donor);
+  const r = rinfo.r;
+  const skip = (i.skip==null) ? !!rinfo.skip : !!i.skip;
+  const out = {
+    donee, donor, date, amount, rel:r, relName:RELNAME[r], skip,
+    minor:isMinor(donee,date), priors:[], priorSum:0, aggregated:false,
+    taxableValue:amount, limit:0, generalDeduct:0, wedDeduct:0, base:0,
+    gross:0, surcharge:0, preCredit:0, filingRate:filingRate(date), filingCredit:0,
+    payable:0, effRate:0, bracket:null, notes:[]
+  };
+  if(!donee || !donor || !date) { out.notes.push('수증자 · 증여자 · 일자를 모두 선택하세요.'); return out; }
+
+  const winStart = addYears(date,-10);
+  const inWin = DB.gifts.filter(g =>
+    g.kind==='gift' && !g.nosum && g.donee===donee && g.id!==i.excludeId && g.date < date && g.date >= winStart);
+
+  /* ① 10년 합산 (동일인 그룹) */
+  const group = aggGroup(donee,donor);
+  out.group = group;
+  const priors = inWin.filter(g=>group.includes(g.donor)).sort((a,b)=>a.date<b.date?-1:1);
+  out.priors = priors;
+  out.priorSum = priors.reduce((s,g)=>s+g.amount,0);
+  out.aggregated = out.priorSum >= 10000000;   // 1천만원 미만은 가산하지 않음
+  const addBack = out.aggregated ? out.priorSum : 0;
+  out.taxableValue = amount + addBack;
+
+  /* ② 혼인 · 출산 증여재산공제 (평생 1억, 직계존속 한정) */
+  const wedUsed = wedUsedBefore(donee, date, i.excludeId);
+  out.wedUsed = wedUsed;
+  const wedAvail = (i.wed && r==='asc') ? Math.max(0, 100000000 - wedUsed) : 0;
+  const wedMine = Math.min(wedAvail, amount);
+  const wedPriors = out.aggregated ? priors.reduce((s,g)=>s+wedApplied(g),0) : 0;
+  out.wedDeduct = wedMine + wedPriors;
+  out.wedMine = wedMine;
+  out.wedAvail = wedAvail;
+
+  /* ③ 일반 증여재산공제 — 관계 그룹별 10년 한도를 날짜순으로 배분 */
+  const limit = deductLimit(r, donee, date);
+  out.limit = limit;
+  const sameRel = inWin.filter(g=>relOf(donee,g.donor).r === r)
+                       .sort((a,b)=> a.date<b.date?-1:(a.date>b.date?1:(a.id<b.id?-1:1)));
+  let pool = limit, allocPriors = 0, usedByOthers = 0;
+  for(const g of sameRel){
+    const net = Math.max(0, g.amount - wedApplied(g));
+    const a = Math.min(pool, net);
+    pool -= a;
+    if(group.includes(g.donor)){ if(out.aggregated) allocPriors += a; }
+    else usedByOthers += a;
+  }
+  const myNet = Math.max(0, amount - wedMine);
+  const allocMine = Math.min(pool, myNet);
+  pool -= allocMine;
+  out.generalDeduct = allocPriors + allocMine;
+  out.allocMine = allocMine;
+  out.allocPriors = allocPriors;
+  out.usedByOthers = usedByOthers;
+  out.remainLimit = Math.max(0, pool);
+
+  /* ④ 과세표준 */
+  out.base = Math.max(0, out.taxableValue - out.generalDeduct - out.wedDeduct);
+  out.taxed = out.base >= 500000;                          // 과세표준 50만원 미만 부과 제외
+  out.bracket = bracketOf(out.base);
+  out.gross = out.taxed ? grossTax(out.base) : 0;
+
+  /* ⑤ 세대생략 할증 */
+  const surRate = skip ? ((out.minor && out.taxableValue > 2000000000) ? 0.40 : 0.30) : 0;
+  out.surRate = surRate;
+  out.surcharge = out.gross * surRate;
+
+  /* ⑥ 기납부세액공제 */
+  if(out.aggregated){
+    const pBase = Math.max(0, out.priorSum - allocPriors - wedPriors);
+    const pGross = pBase >= 500000 ? grossTax(pBase) : 0;
+    const pSur = pGross * surRate;
+    let credit = pGross + pSur;
+    const cap = out.base > 0 ? (out.gross + out.surcharge) * (Math.min(pBase, out.base)/out.base) : 0;
+    out.priorBase = pBase; out.priorGross = pGross;
+    out.preCredit = Math.min(credit, cap);
+  }
+
+  /* ⑦ 신고세액공제 · 납부세액 */
+  const before = Math.max(0, out.gross + out.surcharge - out.preCredit);
+  out.beforeFiling = before;
+  out.filingCredit = before * out.filingRate;
+  out.payable = floor10(before - out.filingCredit);
+  out.effRate = amount>0 ? out.payable/amount : 0;
+  return out;
+}
+
+/* ── 역산 ① : 세금 0원이 되는 최대 금액 ──
+   safe : 이번 증여로 과세표준이 전혀 늘지 않는 최대액 (종전 증여분 과세표준은 기납부세액공제로 상쇄)
+   max  : 납부세액이 0원으로 계산되는 이론상 최대액 (과세표준 50만원 미만 부과제외 · 10원 절사 반영) */
+function maxTaxFree(i){
+  const at = amt => computeTax(Object.assign({}, i, { amount: amt }));
+  const floorBase = at(0).base;                       // 이번 증여가 0원일 때의 과세표준
+  const okBase = amt => at(amt).base <= floorBase;
+  const okPay  = amt => at(amt).payable === 0;
+  function bs(pred){
+    if(!pred(0)) return 0;
+    let lo = 0, hi = 1000000, guard = 0;
+    while(pred(hi) && hi < 1e13 && guard++ < 60) hi *= 2;
+    if(pred(hi)) return hi;
+    while(hi - lo > 1){ const mid = Math.floor((lo+hi)/2); if(pred(mid)) lo = mid; else hi = mid; }
+    return lo;
+  }
+  const safe = bs(okBase);
+  return { safe, max: Math.max(safe, bs(okPay)) };
+}
+
+/* ── 역산 ② : 해당 금액이 세금 0원이 되는 가장 빠른 날짜 ── */
+function earliestZeroDate(i){
+  const from = i.from || todayISO();
+  const set = new Set([from]);
+  DB.gifts.filter(g=>g.kind==='gift' && !g.nosum && g.donee===i.donee).forEach(g=>{
+    set.add(addDays(addYears(g.date,10),1));   // 10년 창을 벗어나는 첫날
+  });
+  const b = (DB.people[i.donee]||{}).birth;
+  if(b) set.add(addYears(b,19));               // 성년 도래 (공제 2천만 → 5천만)
+  const cands = [...set].filter(d=>d>=from && d<=addYears(from,40)).sort();
+  const trail = [];
+  for(const d of cands){
+    const r = computeTax(Object.assign({},i,{date:d}));
+    trail.push({date:d, payable:r.payable, detail:r});
+    if(r.payable === 0) return { found:true, date:d, detail:r, trail };
+  }
+  return { found:false, trail, cands };
+}
+
+/* ══════════════════════════════════════════════════════════
+   5. 집계
+   ══════════════════════════════════════════════════════════ */
+function giftsOf(name){
+  return DB.gifts.filter(g=>g.donee===name).sort((a,b)=> a.date<b.date?-1:(a.date>b.date?1:0));
+}
+function taxOf(g){
+  if(g.filed) return g.tax||0;
+  if(g.kind!=='gift') return 0;
+  const r = computeTax({donee:g.donee,donor:g.donor,date:g.date,amount:g.amount,wed:!!g.wed,excludeId:g.id});
+  return r.payable;
+}
+function totals(){
+  let gift=0, tax=0, loan=0, excl=0, cntG=0, cntL=0, cntX=0;
+  DB.gifts.forEach(g=>{
+    if(g.kind!=='gift'){ loan+=g.amount; cntL++; return; }
+    if(g.nosum){ excl+=g.amount; cntX++; return; }          // 합산제외 건은 소계에서 제외
+    gift+=g.amount; tax+=taxOf(g); cntG++;
+  });
+  return {gift,tax,loan,excl,cntG,cntL,cntX};
+}
+function donorsOf(donee){
+  const set = new Set();
+  Object.keys(DB.rel).forEach(k=>{ const [a,b]=k.split('>'); if(a===donee) set.add(b); });
+  DB.gifts.filter(g=>g.donee===donee).forEach(g=>set.add(g.donor));
+  return [...set].sort();
+}
+/* 관계그룹별 잔여 공제 */
+function deductStatus(donee, date){
+  date = date || todayISO();
+  const winStart = addYears(date,-10);
+  const inWin = DB.gifts.filter(g=>g.kind==='gift' && !g.nosum && g.donee===donee && g.date<=date && g.date>=winStart);
+  const groups = {};
+  ['spouse','asc','desc','rel'].forEach(r=>{
+    const lim = deductLimit(r,donee,date);
+    let used = 0;
+    inWin.filter(g=>relOf(donee,g.donor).r===r).sort((a,b)=>a.date<b.date?-1:1).forEach(g=>{
+      used += Math.min(Math.max(0,lim-used), Math.max(0, g.amount - wedApplied(g)));
+    });
+    groups[r] = { limit:lim, used, remain:Math.max(0,lim-used) };
+  });
+  const wu = wedUsedBefore(donee, addDays(date,1), null);
+  groups.wed = { limit:100000000, used:wu, remain:Math.max(0,100000000-wu) };
+  return groups;
+}
+
+/* ══════════════════════════════════════════════════════════
+   6. 렌더링
+   ══════════════════════════════════════════════════════════ */
+function renderAll(){
+  renderHeader(); renderDash(); renderHist(); renderCalcSel(); renderCalc();
+  renderRevSel(); renderPlanSel(); renderSettings();
+}
+function renderHeader(){
+  $('pDonee').textContent = DB.donees.length;
+  $('pCnt').textContent = DB.gifts.length;
+  const code = localStorage.getItem('giftCode');
+  const p = $('pSync');
+  if(code){ p.textContent='동기화 '+code; p.className='pill ok'; }
+  else { p.textContent='동기화 없음'; p.className='pill'; }
+}
+
+/* ── 대시보드 ── */
+function renderDash(){
+  const t = totals();
+  $('dashStats').innerHTML = `
+    <div class="stat gold"><div class="k">총 증여금액 (누적)</div><div class="v">${korMoney(t.gift)}</div><div class="n">${cm(t.gift)}원 · ${t.cntG}건</div></div>
+    <div class="stat bad"><div class="k">총 증여세 (누적)</div><div class="v">${korMoney(t.tax)}</div><div class="n">실효 ${(t.gift?t.tax/t.gift*100:0).toFixed(2)}%</div></div>
+    <div class="stat info"><div class="k">총 대여금액 (참고)</div><div class="v">${korMoney(t.loan)}</div><div class="n">${t.cntL}건 · 증여 별도</div></div>
+    <div class="stat ok"><div class="k">순 이전액 (증여−세금)</div><div class="v">${korMoney(t.gift-t.tax)}</div><div class="n">${t.excl?'합산제외 '+korMoney(t.excl)+' 별도':'10년 합산기준일 '+fmtD(DB.base)}</div></div>`;
+
+  const today = todayISO();
+  $('dashPeople').innerHTML = DB.donees.map(n=>{
+    const gs = giftsOf(n);
+    const gift = gs.filter(g=>g.kind==='gift'&&!g.nosum).reduce((s,g)=>s+g.amount,0);
+    const tax  = gs.filter(g=>g.kind==='gift'&&!g.nosum).reduce((s,g)=>s+taxOf(g),0);
+    const loan = gs.filter(g=>g.kind==='loan').reduce((s,g)=>s+g.amount,0);
+    const st = deductStatus(n, today);
+    const asc = st.asc;
+    const pct = asc.limit ? Math.min(100, asc.used/asc.limit*100) : 0;
+    return `<div class="stat" style="cursor:pointer" onclick="gotoHist('${n}')">
+      <div class="row" style="justify-content:space-between">
+        <div class="v" style="font-size:16px">${n}</div>
+        <span class="tag ${asc.remain>0?'free':''}">${asc.remain>0?'직계 잔여 '+korMoney(asc.remain):'직계 공제 소진'}</span>
+      </div>
+      <div class="n" style="margin-top:7px">증여 <b style="color:var(--gold2)">${korMoney(gift)}</b> · 세금 <b style="color:var(--bad)">${korMoney(tax)}</b>${loan?' · 대여 <b style="color:var(--info)">'+korMoney(loan)+'</b>':''}</div>
+      <div class="gg" style="margin:8px 0 0">
+        <div class="bar"><div class="fill ${pct>=100?'full':''}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="n" style="margin-top:4px">직계존속 공제 ${cm(asc.used)} / ${cm(asc.limit)}원 · ${gs.length}건</div>
+    </div>`;
+  }).join('');
+
+  const recent = DB.gifts.slice().sort((a,b)=> a.date<b.date?1:-1).slice(0,10);
+  $('dashRecent').innerHTML = `<thead><tr><th>구분</th><th>수증자</th><th>증여자</th><th>일자</th><th style="text-align:right">금액</th><th style="text-align:right">세금</th><th>유형</th></tr></thead><tbody>` +
+    recent.map(g=>`<tr><td>${kindTag(g)}</td><td>${g.donee}</td><td>${g.donor}</td><td class="d">${fmtD(g.date)}</td>
+      <td class="num">${cm(g.amount)}</td><td class="num" style="color:${taxOf(g)?'var(--bad)':'var(--dim2)'}">${cm(taxOf(g))}</td><td>${g.type||'-'}</td></tr>`).join('') +
+    `</tbody>`;
+}
+function kindTag(g){
+  if(g.kind==='loan') return '<span class="tag loan">대여</span>';
+  if(g.nosum) return '<span class="tag old">증여(합산제외)</span>';
+  if(g.date < DB.base) return '<span class="tag old">증여(10년경과)</span>';
+  let s = '<span class="tag gift">증여</span>';
+  if(g.wed) s += ' <span class="tag wed">혼인</span>';
+  if(relOf(g.donee,g.donor).skip) s += ' <span class="tag skip">세대생략</span>';
+  return s;
+}
+function gotoHist(n){ curDonee=n; tab('hist'); renderHist(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+/* ── 인별 이력 ── */
+function renderHist(){
+  $('histChips').innerHTML = DB.donees.map(n=>
+    `<button class="chip ${n===curDonee?'on':''}" onclick="curDonee='${n}';renderHist()">${n}</button>`).join('');
+  const gs = giftsOf(curDonee);
+  const gift = gs.filter(g=>g.kind==='gift'&&!g.nosum).reduce((s,g)=>s+g.amount,0);
+  const tax  = gs.filter(g=>g.kind==='gift'&&!g.nosum).reduce((s,g)=>s+taxOf(g),0);
+  const loan = gs.filter(g=>g.kind==='loan').reduce((s,g)=>s+g.amount,0);
+  const today = todayISO();
+  const win = gs.filter(g=>g.kind==='gift' && !g.nosum && g.date>=addYears(today,-10)).reduce((s,g)=>s+g.amount,0);
+
+  const p = DB.people[curDonee]||{};
+  $('histWho').innerHTML = `${curDonee} · 생년월일 ${p.birth?fmtD(p.birth):'<span style="color:var(--warn)">미입력</span>'} · 혼인신고일 ${p.marry?fmtD(p.marry):'미입력'}`;
+  $('histAsOf').textContent = '(오늘 ' + fmtD(today) + ' 기준)';
+
+  $('histStats').innerHTML = `
+    <div class="stat gold"><div class="k">증여 누계</div><div class="v">${korMoney(gift)}</div><div class="n">${gs.filter(g=>g.kind==='gift').length}건</div></div>
+    <div class="stat bad"><div class="k">증여세 누계</div><div class="v">${korMoney(tax)}</div><div class="n">실효 ${(gift?tax/gift*100:0).toFixed(2)}%</div></div>
+    <div class="stat info"><div class="k">10년 내 증여</div><div class="v">${korMoney(win)}</div><div class="n">${fmtD(addYears(today,-10))} 이후</div></div>
+    <div class="stat"><div class="k">대여 누계</div><div class="v">${korMoney(loan)}</div><div class="n">증여 별도 집계</div></div>`;
+
+  $('histTable').innerHTML =
+    `<thead><tr><th>구분</th><th>증여자/대여자</th><th>일자</th><th style="text-align:right">금액</th><th style="text-align:right">세금</th><th>관계</th><th>유형</th><th>비고</th></tr></thead><tbody>` +
+    (gs.length ? gs.map(g=>{
+      const old = g.date < DB.base || !!g.nosum;
+      const t = taxOf(g);
+      const rn = RELNAME[relOf(g.donee,g.donor).r];
+      return `<tr class="${old?'old':''}" style="cursor:pointer" onclick="openGift('${g.id}')">
+        <td>${kindTag(g)}${g.filed?'':' <span class="tag" style="border-color:var(--goldDim);color:var(--gold2)">자동</span>'}</td>
+        <td><b>${g.donor}</b></td><td class="d">${fmtD(g.date)}</td>
+        <td class="num">${cm(g.amount)}</td>
+        <td class="num" style="color:${t?'var(--bad)':'var(--ok)'}">${cm(t)}</td>
+        <td>${rn}</td><td>${g.type||'-'}</td><td style="color:var(--dim2);max-width:220px">${g.note||''}</td></tr>`;
+    }).join('') : `<tr><td colspan="8" style="text-align:center;color:var(--dim2);padding:24px">등록된 이력이 없습니다.</td></tr>`) +
+    `<tr class="sum"><td colspan="3">소계 (증여)</td><td class="num">${cm(gift)}</td><td class="num">${cm(tax)}</td><td colspan="3" style="font-weight:600;color:var(--dim2)">${gs.some(g=>g.nosum)?'합산제외 건 제외':''}</td></tr>` +
+    (loan?`<tr class="sum"><td colspan="3">소계 (대여)</td><td class="num">${cm(loan)}</td><td class="num">0</td><td colspan="3"></td></tr>`:'') +
+    `</tbody>`;
+
+  const st = deductStatus(curDonee, today);
+  $('histGauges').innerHTML = ['spouse','asc','desc','rel'].map(r=>{
+    const s = st[r]; if(!s.limit) return '';
+    const pct = Math.min(100, s.used/s.limit*100);
+    return `<div class="gg"><div class="top"><span class="l">${RELNAME[r]} 공제</span>
+      <span class="r">${cm(s.used)} / ${cm(s.limit)}원 · 잔여 <b style="color:${s.remain?'var(--ok)':'var(--bad)'}">${cm(s.remain)}</b></span></div>
+      <div class="bar"><div class="fill ${pct>=100?'full':(pct<1?'free':'')}" style="width:${pct}%"></div></div></div>`;
+  }).join('') +
+  `<div class="gg"><div class="top"><span class="l">혼인 · 출산 공제 (평생)</span>
+    <span class="r">${cm(st.wed.used)} / 100,000,000원 · 잔여 <b style="color:${st.wed.remain?'var(--ok)':'var(--bad)'}">${cm(st.wed.remain)}</b></span></div>
+    <div class="bar"><div class="fill ${st.wed.used>=1e8?'full':''}" style="width:${Math.min(100,st.wed.used/1e6)}%"></div></div></div>` +
+  (DB.people[curDonee] && !DB.people[curDonee].birth
+    ? `<div class="note warn" style="margin-top:10px"><b>생년월일 미입력</b> — 성년(직계존속 공제 5천만원)으로 계산 중입니다. 미성년자라면 설정에서 생년월일을 입력하세요 (공제 2천만원).</div>` : '');
+}
+
+/* ── 계산기 ── */
+function fillSel(el, list, keep){
+  const cur = keep!=null ? keep : el.value;
+  el.innerHTML = list.map(v=>`<option value="${v}">${v}</option>`).join('');
+  if(list.includes(cur)) el.value = cur;
+}
+function renderCalcSel(){
+  fillSel($('cDonee'), DB.donees);
+  const d = $('cDonee').value || DB.donees[0];
+  const donors = donorsOf(d).length ? donorsOf(d) : Object.keys(DB.people).filter(x=>x!==d);
+  fillSel($('cDonor'), donors);
+  if(!$('cDate').value) $('cDate').value = todayISO();
+}
+function renderCalc(){
+  const donee=$('cDonee').value, donor=$('cDonor').value, date=$('cDate').value, amt=getMoney($('cAmt'));
+  const ri = relOf(donee,donor);
+  const known = !!DB.rel[donee+'>'+donor];
+  $('cRelNote').innerHTML = known
+    ? `<div class="note"><b>${donor}</b> → <b>${donee}</b> : ${RELNAME[ri.r]}${ri.skip?' · 세대생략 대상':''} · 10년 공제한도 <b>${cm(deductLimit(ri.r,donee,date||todayISO()))}원</b></div>`
+    : `<div class="note warn"><b>관계 미설정</b> — <b>${donor}</b> → <b>${donee}</b> 관계가 등록되지 않아 '타인(공제 0원)'으로 계산됩니다. 설정 탭에서 관계를 지정하세요.</div>`;
+
+  const r = computeTax({donee,donor,date,amount:amt,wed:$('cWed').checked,skip:$('cSkip').checked||ri.skip});
+  $('cResult').innerHTML = resultPanel(r);
+
+  $('cPriors').innerHTML =
+    `<thead><tr><th>증여자</th><th>일자</th><th style="text-align:right">금액</th><th style="text-align:right">기납부세액</th><th>유형</th></tr></thead><tbody>` +
+    (r.priors.length ? r.priors.map(g=>`<tr><td><b>${g.donor}</b></td><td>${fmtD(g.date)}</td><td class="num">${cm(g.amount)}</td><td class="num">${cm(taxOf(g))}</td><td>${g.type||'-'}</td></tr>`).join('')
+      : `<tr><td colspan="5" style="text-align:center;color:var(--dim2);padding:20px">합산 대상 증여가 없습니다${date?' ('+fmtD(addYears(date,-10))+' 이후 · 동일인 그룹: '+(r.group||[]).join(', ')+')':''}.</td></tr>`) +
+    (r.priors.length?`<tr class="sum"><td colspan="2">합산 대상 계</td><td class="num">${cm(r.priorSum)}</td><td class="num">${cm(r.priors.reduce((s,g)=>s+taxOf(g),0))}</td><td>${r.aggregated?'가산 적용':'1천만원 미만 · 가산 제외'}</td></tr>`:'') +
+    `</tbody>`;
+}
+function resultPanel(r){
+  if(!r.amount) return `<div class="note" style="margin-top:14px">증여재산가액을 입력하면 자동으로 계산됩니다.</div>`;
+  const zero = r.payable === 0;
+  const li = (lb,vl,cls,sub)=>`<div class="li ${cls||''}"><span class="lb">${lb}${sub?'<small>'+sub+'</small>':''}</span><span class="vl">${vl}</span></div>`;
+  return `<div class="res">
+    <div class="res-head">
+      <div class="k">납 부 할 증 여 세</div>
+      <div class="v ${zero?'zero':''}">${zero?'0원 · 비과세':won(r.payable)}</div>
+      <div class="n">${zero?'현재 조건에서는 증여세가 발생하지 않습니다':korMoney(r.payable)+' · 실효세율 '+(r.effRate*100).toFixed(2)+'%'}</div>
+    </div>
+    <div class="br">
+      ${li('이번 증여재산가액', won(r.amount))}
+      ${li('10년 내 동일인 증여 가산', (r.aggregated?'+ ':'')+won(r.aggregated?r.priorSum:0), r.aggregated?'plus':'', r.aggregated?'동일인 그룹: '+(r.group||[]).join(' · ')+' · '+r.priors.length+'건':'가산 대상 없음(1천만원 미만)')}
+      ${li('증여세 과세가액', won(r.taxableValue),'hi')}
+      ${li('증여재산공제 ('+r.relName+')', '− '+won(r.generalDeduct),'minus','10년 한도 '+cm(r.limit)+'원'+(r.usedByOthers?' · 타 증여자 사용 '+cm(r.usedByOthers)+'원':'')+(r.minor?' · 미성년자':''))}
+      ${r.wedDeduct?li('혼인 · 출산 증여재산공제','− '+won(r.wedDeduct),'minus','평생 1억 한도 · 기사용 '+cm(r.wedUsed)+'원'):''}
+      ${li('과세표준', won(r.base),'hi', r.taxed?(r.bracket?'적용세율 '+(r.bracket.rate*100)+'% · 누진공제 '+cm(r.bracket.ded)+'원':''):'50만원 미만 — 부과 제외')}
+      ${li('산출세액', won(r.gross),'plus')}
+      ${r.surcharge?li('세대생략 할증', '+ '+won(r.surcharge),'plus','산출세액의 '+(r.surRate*100)+'%'):''}
+      ${r.preCredit?li('기납부세액공제', '− '+won(r.preCredit),'minus','종전 증여분 산출세액 상당액'):''}
+      ${li('신고세액공제 ('+(r.filingRate*100)+'%)', '− '+won(r.filingCredit),'minus','기한 내 신고 시')}
+      ${li('납부할 세액', won(r.payable),'hi','10원 미만 절사')}
+      ${li('수증자 실수령액', won(r.amount - r.payable),'','증여액에서 세금을 뺀 금액')}
+    </div>
+  </div>`;
+}
+function addAmt(v){ setMoney($('cAmt'), getMoney($('cAmt'))+v); renderCalc(); }
+function setAmt(v){ setMoney($('cAmt'), v); renderCalc(); }
+
+function saveFromCalc(){
+  const donee=$('cDonee').value, donor=$('cDonor').value, date=$('cDate').value, amt=getMoney($('cAmt'));
+  if(!amt){ toast('금액을 입력하세요.',1); return; }
+  openGift();
+  $('gDonee').value=donee; $('gDonor').value=donor; $('gDate').value=date;
+  setMoney($('gAmt'),amt); $('gWed').checked=$('cWed').checked; $('gTax').value='';
+  previewGift();
+}
+function goRevFromCalc(){
+  tab('rev');
+  fillSel($('rDonee'),DB.donees,$('cDonee').value);
+  renderRevSel();
+  $('rDonor').value = $('cDonor').value;
+  $('rDate').value = $('cDate').value || todayISO();
+  setMoney($('rAmt'), getMoney($('cAmt')));
+  $('rWed').checked = $('cWed').checked;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── 역산 ── */
+function renderRevSel(){
+  fillSel($('rDonee'), DB.donees);
+  const d=$('rDonee').value||DB.donees[0];
+  const donors = donorsOf(d).length ? donorsOf(d) : Object.keys(DB.people).filter(x=>x!==d);
+  fillSel($('rDonor'), donors);
+  if(!$('rDate').value) $('rDate').value = todayISO();
+  if(!$('rFrom').value) $('rFrom').value = todayISO();
+}
+function setRAmt(v){ setMoney($('rAmt'),v); }
+
+function runRevAmount(){
+  const i = { donee:$('rDonee').value, donor:$('rDonor').value, date:$('rDate').value, wed:$('rWed').checked };
+  if(!i.date){ toast('증여 예정일을 선택하세요.',1); return; }
+  const res = maxTaxFree(i);
+  const rr = computeTax(Object.assign({},i,{amount:res.safe}));
+  const nice = Math.floor(res.safe/10000)*10000;
+  const over = computeTax(Object.assign({},i,{amount:res.safe+10000000}));
+  $('rAmtOut').innerHTML = `
+  <div class="res" style="margin-top:14px">
+    <div class="res-head">
+      <div class="k">${fmtD(i.date)} 기준 · 증여세 0원 최대 금액</div>
+      <div class="v zero">${res.safe?korMoney(res.safe):'0원'}</div>
+      <div class="n">${res.safe?cm(res.safe)+'원까지 세금 없이 증여 가능':'현재 이 관계에서는 공제 잔여액이 없어 첫 원부터 과세됩니다'}</div>
+    </div>
+    <div class="br">
+      <div class="li hi"><span class="lb">권장 증여액 (만원 단위 절사)</span><span class="vl">${won(nice)}</span></div>
+      <div class="li"><span class="lb">관계 · 10년 공제한도</span><span class="vl">${rr.relName} · ${cm(rr.limit)}원</span></div>
+      <div class="li"><span class="lb">10년 내 이미 사용한 공제<small>${fmtD(addYears(i.date,-10))} 이후 증여분</small></span><span class="vl">${cm(Math.max(0, rr.limit - rr.remainLimit - rr.allocMine))}원</span></div>
+      <div class="li"><span class="lb">이번 증여에 쓸 수 있는 잔여 공제</span><span class="vl">${cm(rr.remainLimit + rr.allocMine)}원</span></div>
+      ${rr.wedAvail?`<div class="li"><span class="lb">혼인 · 출산 공제 잔여</span><span class="vl">${cm(rr.wedAvail)}원</span></div>`:''}
+      <div class="li"><span class="lb">10년 내 동일인 증여 합계</span><span class="vl">${cm(rr.priorSum)}원 · ${rr.priors.length}건</span></div>
+      <div class="li"><span class="lb">과세표준 0원 한도 (안전)</span><span class="vl">${won(res.safe)}</span></div>
+      <div class="li"><span class="lb">납부세액 0원 한도 (이론상 최대)<small>과세표준 50만원 미만 부과제외 · 10원 절사 반영</small></span><span class="vl">${won(res.max)}</span></div>
+    </div>
+  </div>
+  <div class="note ${res.safe?'ok':'warn'}" style="margin-top:12px">
+    ${res.safe
+      ? `<b>${fmtD(i.date)}</b>에 <b>${i.donor}</b>가 <b>${i.donee}</b>에게 <b>${korMoney(res.safe)}</b>까지 증여하면 증여세가 <b>0원</b>입니다.<br />여기서 1천만원을 더해 <b>${korMoney(res.safe+10000000)}</b>을 증여하면 세금은 <b>${won(over.payable)}</b>이 됩니다.`
+      : `<b>${i.donor}</b> → <b>${i.donee}</b> 관계(${rr.relName})의 10년 공제 한도 ${cm(rr.limit)}원이 이미 소진되었습니다. 아래 ②번에서 <b>세금 0원이 되는 날짜</b>를 역산해 보세요.`}
+  </div>`;
+}
+
+function runRevDate(){
+  const i = { donee:$('rDonee').value, donor:$('rDonor').value, amount:getMoney($('rAmt')), wed:$('rWed').checked, from:$('rFrom').value||todayISO() };
+  if(!i.amount){ toast('증여 희망액을 입력하세요.',1); return; }
+  const res = earliestZeroDate(i);
+  const rows = res.trail.map(t=>{
+    const zero = t.payable===0;
+    return `<tr><td class="d"><b style="color:${zero?'var(--ok)':'var(--txt)'}">${fmtD(t.date)}</b></td>
+      <td class="num" style="color:${zero?'var(--ok)':'var(--bad)'}">${cm(t.payable)}</td>
+      <td class="num">${cm(t.detail.priorSum)}</td>
+      <td class="num">${cm(t.detail.generalDeduct+t.detail.wedDeduct)}</td>
+      <td class="num">${cm(t.detail.base)}</td>
+      <td>${zero?'<span class="tag free">무세</span>':'<span class="tag">과세</span>'}</td></tr>`;
+  }).join('');
+
+  if(res.found){
+    const d = res.detail;
+    const now = computeTax(Object.assign({},i,{date:i.from}));
+    const wait = Math.max(0, Math.round((new Date(res.date)-new Date(i.from))/86400000));
+    $('rDateOut').innerHTML = `
+    <div class="res" style="margin-top:14px">
+      <div class="res-head">
+        <div class="k">${korMoney(i.amount)} 증여 시 · 증여세 0원이 되는 날</div>
+        <div class="v zero">${fmtD(res.date)}</div>
+        <div class="n">${wait===0?'오늘 바로 증여해도 세금이 없습니다':'오늘부터 '+cm(wait)+'일 후 ('+(wait/365).toFixed(1)+'년)'}</div>
+      </div>
+      <div class="br">
+        <div class="li"><span class="lb">지금(${fmtD(i.from)}) 증여할 경우 세금</span><span class="vl" style="color:var(--bad)">${won(now.payable)}</span></div>
+        <div class="li hi"><span class="lb">${fmtD(res.date)}에 증여할 경우 세금</span><span class="vl" style="color:var(--ok)">0원</span></div>
+        <div class="li minus"><span class="lb">절세 효과</span><span class="vl">${won(now.payable)}</span></div>
+        <div class="li"><span class="lb">그날 기준 10년 내 동일인 증여</span><span class="vl">${cm(d.priorSum)}원 · ${d.priors.length}건</span></div>
+        <div class="li"><span class="lb">그날 기준 적용 공제</span><span class="vl">${cm(d.generalDeduct+d.wedDeduct)}원</span></div>
+        <div class="li"><span class="lb">과세표준</span><span class="vl">${won(d.base)}</span></div>
+      </div>
+    </div>
+    <div class="note ok" style="margin-top:12px">
+      <b>${fmtD(res.date)}</b> 이후에 <b>${i.donor}</b>가 <b>${i.donee}</b>에게 <b>${korMoney(i.amount)}</b>을 증여하면 증여세가 <b>0원</b>입니다.
+      ${wait>0?`이 날짜는 과거 증여가 <b>10년 합산기간</b>을 벗어나 증여재산공제 한도가 되살아나는 시점입니다.`:''}
+    </div>`;
+  } else {
+    const best = res.trail.reduce((a,b)=> b.payable<a.payable?b:a, res.trail[0]);
+    const cap = maxTaxFree({donee:i.donee,donor:i.donor,date:best?best.date:i.from,wed:i.wed});
+    $('rDateOut').innerHTML = `
+    <div class="note bad" style="margin-top:14px">
+      <b>해당 금액은 어떤 날짜에도 증여세 0원이 되지 않습니다.</b><br />
+      ${korMoney(i.amount)}은(는) <b>${i.donor}</b> → <b>${i.donee}</b> 관계의 10년 공제 한도를 초과합니다.
+      과거 증여가 모두 소멸한 시점(${best?fmtD(best.date):'-'})에도 무세 한도는 <b>${korMoney(cap.safe)}</b>이며, 세금은 <b>${won(best?best.payable:0)}</b>입니다.<br />
+      → ①번에서 <b>무세 최대 금액</b>을 확인하고 여러 해에 나누어 증여하는 방안을 검토하세요.
+    </div>`;
+  }
+  $('rDateOut').innerHTML += `<div class="hr"></div><div class="tw"><table>
+    <thead><tr><th>분기점 날짜</th><th style="text-align:right">납부세액</th><th style="text-align:right">10년내 합산</th><th style="text-align:right">적용공제</th><th style="text-align:right">과세표준</th><th>판정</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>
+    <p class="desc" style="margin-top:8px">분기점 = 과거 증여가 10년 합산기간을 벗어나는 날 · 성년 도래일 등 공제 여건이 바뀌는 날짜입니다.</p>`;
+}
+
+/* ── 무세 캘린더 ── */
+function renderPlanSel(){
+  fillSel($('pDoneeSel'), DB.donees);
+  const d=$('pDoneeSel').value||DB.donees[0];
+  const donors = donorsOf(d).length ? donorsOf(d) : Object.keys(DB.people).filter(x=>x!==d);
+  fillSel($('pDonorSel'), donors);
+}
+function runPlan(){
+  const donee=$('pDoneeSel').value, donor=$('pDonorSel').value, wed=$('pWed').checked;
+  const from = todayISO();
+  const set = new Set([from]);
+  DB.gifts.filter(g=>g.kind==='gift'&&!g.nosum&&g.donee===donee).forEach(g=>set.add(addDays(addYears(g.date,10),1)));
+  const b=(DB.people[donee]||{}).birth; if(b) set.add(addYears(b,19));
+  const cands=[...set].filter(d=>d>=from && d<=addYears(from,25)).sort();
+  let prev=-1, rows='';
+  cands.forEach(d=>{
+    const c = maxTaxFree({donee,donor,date:d,wed});
+    const gained = prev<0 ? c.safe : c.safe-prev;
+    const rr = computeTax({donee,donor,date:d,amount:c.safe,wed});
+    rows += `<tr><td class="d"><b>${fmtD(d)}</b></td>
+      <td class="num" style="color:var(--ok)">${cm(c.safe)}</td>
+      <td class="kor">${korMoney(c.safe)}</td>
+      <td class="num" style="color:${gained>0?'var(--gold2)':'var(--dim2)'}">${gained>0?'+'+cm(gained):'-'}</td>
+      <td class="num">${cm(rr.priorSum)}</td>
+      <td>${rr.relName}${rr.minor?' · 미성년':''}</td></tr>`;
+    prev = c.safe;
+  });
+  $('planTable').innerHTML = `<thead><tr><th>날짜</th><th style="text-align:right">무세 최대 증여액</th><th>한글</th><th style="text-align:right">증가분</th><th style="text-align:right">10년내 합산</th><th>관계</th></tr></thead><tbody>${rows||'<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--dim2)">데이터가 없습니다.</td></tr>'}</tbody>`;
+  const ri = relOf(donee,donor);
+  const first = cands.find(d=>maxTaxFree({donee,donor,date:d,wed}).safe > 0);
+  const firstAmt = first ? maxTaxFree({donee,donor,date:first,wed}).safe : 0;
+  $('planNote').innerHTML = `<div class="note ${first?'ok':'warn'}"><b>${donor}</b> → <b>${donee}</b> (${RELNAME[ri.r]}${ri.skip?' · 세대생략':''}) · 각 분기점은 과거 증여가 10년 합산기간을 벗어나 공제 한도가 되살아나는 날입니다.
+    ${first
+      ? `가장 빠른 무세 증여 시점은 <b>${fmtD(first)}</b>이며 그날 <b>${korMoney(firstAmt)}</b>까지 세금 없이 증여할 수 있습니다.`
+      : `향후 25년간 이 관계에서 무세로 증여할 수 있는 시점이 없습니다.`}
+    <br /><b style="color:var(--warn)">주의</b> — 표의 금액은 각 시점을 <b>독립적으로</b> 계산한 값입니다. 실제로 어느 시점에 증여하면 그 건이 다시 10년간 합산되므로 이후 분기점의 한도는 줄어듭니다. 순차 증여 계획은 한 건씩 등록한 뒤 다시 계산하세요.
+    ${ri.skip?'<br />※ 세대생략 할증(30%) 대상입니다. 공제 한도를 넘는 순간 세부담이 크게 늘어납니다.':''}</div>`;
+}
+
+/* ══════════════════════════════════════════════════════════
+   7. 모달 · CRUD
+   ══════════════════════════════════════════════════════════ */
+function openM(id){ $(id).classList.add('on'); document.body.style.overflow='hidden'; }
+function closeM(id){ $(id).classList.remove('on'); document.body.style.overflow=''; }
+document.querySelectorAll('.mask').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) closeM(m.id); }));
+
+function openGift(id){
+  editId = id || null;
+  const all = Object.keys(DB.people);
+  fillSel($('gDonee'), DB.donees);
+  fillSel($('gDonor'), all);
+  $('mGiftTitle').textContent = id ? '이력 수정' : '이력 추가';
+  $('gDel').style.display = id ? '' : 'none';
+  if(id){
+    const g = DB.gifts.find(x=>x.id===id);
+    $('gKind').value=g.kind; $('gDonee').value=g.donee; $('gDonor').value=g.donor; $('gDate').value=g.date;
+    setMoney($('gAmt'),g.amount); setMoney($('gTax'), g.filed? g.tax : '');
+    $('gType').value=g.type||''; $('gNote').value=g.note||'';
+    $('gWed').checked=!!g.wed; $('gFiled').checked=!!g.filed; $('gNosum').checked=!!g.nosum;
+  } else {
+    $('gKind').value='gift'; $('gDonee').value=curDonee||DB.donees[0];
+    $('gDate').value=todayISO(); setMoney($('gAmt'),''); setMoney($('gTax'),'');
+    $('gType').value=''; $('gNote').value=''; $('gWed').checked=false; $('gFiled').checked=false; $('gNosum').checked=false;
+  }
+  previewGift();
+  openM('mGift');
+}
+function previewGift(){
+  const kind=$('gKind').value;
+  if(kind==='loan'){
+    const amt=getMoney($('gAmt'));
+    const int = amt*0.046;
+    $('gPreview').innerHTML = `<div class="note ${int<10000000?'ok':'warn'}"><b>금전소비대차 참고</b> — 적정이자율 4.6% 기준 연 인정이자 <b>${won(int)}</b>.
+      ${int<10000000?'연 1천만원 미만이므로 증여로 보지 않습니다(무이자 대여 가능).':'연 1천만원 이상이므로 이자를 실제 수수하지 않으면 증여로 의제될 수 있습니다.'} 차용증·이자지급 내역을 갖추세요.</div>`;
+    return;
+  }
+  const r = computeTax({donee:$('gDonee').value,donor:$('gDonor').value,date:$('gDate').value,
+    amount:getMoney($('gAmt')), wed:$('gWed').checked, excludeId:editId});
+  const manual = getMoney($('gTax'));
+  $('gPreview').innerHTML = getMoney($('gAmt'))
+    ? `<div class="note ${r.payable?'warn':'ok'}"><b>자동계산 세액 ${won(r.payable)}</b>
+        <small style="display:block;color:inherit;opacity:.8;margin-top:3px">과세가액 ${cm(r.taxableValue)} − 공제 ${cm(r.generalDeduct+r.wedDeduct)} → 과세표준 ${cm(r.base)} → 산출 ${cm(r.gross)}${r.surcharge?' + 할증 '+cm(r.surcharge):''}${r.preCredit?' − 기납부 '+cm(r.preCredit):''} − 신고공제 ${cm(r.filingCredit)}</small>
+        ${manual&&Math.abs(manual-r.payable)>10?`<br /><b style="color:var(--warn)">입력한 세액 ${won(manual)}과 ${won(Math.abs(manual-r.payable))} 차이가 있습니다.</b>`:''}</div>`
+    : `<div class="note">금액을 입력하면 세액이 자동 계산됩니다.</div>`;
+}
+['gKind','gDonee','gDonor','gDate','gAmt','gTax','gWed'].forEach(id=>{
+  document.addEventListener('DOMContentLoaded',()=>{});
+});
+
+function saveGift(){
+  const kind=$('gKind').value, donee=$('gDonee').value, donor=$('gDonor').value, date=$('gDate').value;
+  const amount=getMoney($('gAmt'));
+  if(!donee||!donor||!date||!amount){ toast('수증자 · 증여자 · 일자 · 금액은 필수입니다.',1); return; }
+  if(donee===donor){ toast('수증자와 증여자가 같을 수 없습니다.',1); return; }
+  const filed=$('gFiled').checked;
+  const manual=getMoney($('gTax'));
+  const auto = kind==='gift' ? computeTax({donee,donor,date,amount,wed:$('gWed').checked,excludeId:editId}).payable : 0;
+  const rec = {
+    id: editId || ('g'+Date.now().toString(36)),
+    kind, donee, donor, date, amount,
+    tax: filed ? (manual || auto) : auto,
+    type: $('gType').value.trim(), note: $('gNote').value.trim(),
+    wed: $('gWed').checked?1:0, filed: filed?1:0, nosum: $('gNosum').checked?1:0
+  };
+  if(editId){ const i=DB.gifts.findIndex(x=>x.id===editId); DB.gifts[i]=rec; }
+  else DB.gifts.push(rec);
+  if(!DB.rel[donee+'>'+donor]) DB.rel[donee+'>'+donor] = {r:'other',skip:0};
+  closeM('mGift'); curDonee = donee; save();
+  toast(editId?'수정했습니다.':'등록했습니다.');
+}
+function delGift(){
+  if(!editId) return;
+  if(!confirm('이 이력을 삭제할까요?')) return;
+  DB.gifts = DB.gifts.filter(x=>x.id!==editId);
+  closeM('mGift'); save(); toast('삭제했습니다.');
+}
+
+/* ── 인물 ── */
+function openPerson(name){
+  editPerson = name||null;
+  $('mPersonTitle').textContent = name?'인물 수정':'인물 추가';
+  $('pDel').style.display = name?'':'none';
+  const p = name ? (DB.people[name]||{}) : {};
+  $('pName').value = name||''; $('pBirth').value=p.birth||''; $('pSpouse').value=p.spouse||''; $('pMarry').value=p.marry||'';
+  $('pIsDonee').checked = name ? DB.donees.includes(name) : true;
+  openM('mPerson');
+}
+function savePerson(){
+  const name=$('pName').value.trim();
+  if(!name){ toast('이름을 입력하세요.',1); return; }
+  if(editPerson && editPerson!==name){
+    DB.people[name]=DB.people[editPerson]; delete DB.people[editPerson];
+    DB.gifts.forEach(g=>{ if(g.donee===editPerson)g.donee=name; if(g.donor===editPerson)g.donor=name; });
+    const nr={}; Object.keys(DB.rel).forEach(k=>{ const [a,b]=k.split('>');
+      nr[(a===editPerson?name:a)+'>'+(b===editPerson?name:b)]=DB.rel[k]; });
+    DB.rel=nr;
+    DB.donees=DB.donees.map(d=>d===editPerson?name:d);
+    Object.values(DB.people).forEach(p=>{ if(p.spouse===editPerson)p.spouse=name; });
+    if(curDonee===editPerson) curDonee=name;
+  }
+  DB.people[name]={ birth:$('pBirth').value, spouse:$('pSpouse').value.trim(), marry:$('pMarry').value };
+  const isD=$('pIsDonee').checked;
+  if(isD && !DB.donees.includes(name)) DB.donees.push(name);
+  if(!isD) DB.donees = DB.donees.filter(d=>d!==name);
+  if(!DB.donees.includes(curDonee)) curDonee = DB.donees[0]||'';
+  closeM('mPerson'); save(); toast('저장했습니다.');
+}
+function delPerson(){
+  if(!editPerson) return;
+  const used = DB.gifts.filter(g=>g.donee===editPerson||g.donor===editPerson).length;
+  if(used && !confirm(`${editPerson} 관련 이력 ${used}건이 있습니다. 인물만 삭제할까요? (이력은 남습니다)`)) return;
+  delete DB.people[editPerson];
+  DB.donees = DB.donees.filter(d=>d!==editPerson);
+  if(!DB.donees.includes(curDonee)) curDonee=DB.donees[0]||'';
+  closeM('mPerson'); save(); toast('삭제했습니다.');
+}
+
+/* ── 관계 ── */
+function openRel(donee,donor){
+  const all=Object.keys(DB.people);
+  fillSel($('xDonee'), DB.donees, donee);
+  fillSel($('xDonor'), all, donor);
+  const cur = DB.rel[($('xDonee').value)+'>'+($('xDonor').value)] || {r:'asc',skip:0};
+  $('xRel').value=cur.r; $('xSkip').checked=!!cur.skip;
+  openM('mRel');
+}
+function saveRel(){
+  const a=$('xDonee').value, b=$('xDonor').value;
+  if(a===b){ toast('수증자와 증여자가 같을 수 없습니다.',1); return; }
+  DB.rel[a+'>'+b]={ r:$('xRel').value, skip:$('xSkip').checked?1:0 };
+  closeM('mRel'); save(); toast('관계를 저장했습니다.');
+}
+function delRel(k){
+  if(!confirm('이 관계 설정을 삭제할까요?')) return;
+  delete DB.rel[k]; save(); toast('삭제했습니다.');
+}
+
+/* ── 설정 렌더 ── */
+function renderSettings(){
+  $('sBase').value = DB.base || '2016-08-03';
+  $('sCode').value = localStorage.getItem('giftCode')||'';
+  $('sAuto').checked = localStorage.getItem('giftAuto')==='1';
+
+  $('pplTable').innerHTML = `<thead><tr><th>이름</th><th>수증자</th><th>생년월일</th><th>배우자</th><th>혼인신고일</th><th>증여받은 건</th><th></th></tr></thead><tbody>` +
+    Object.keys(DB.people).map(n=>{
+      const p=DB.people[n];
+      const cnt=DB.gifts.filter(g=>g.donee===n).length, cnt2=DB.gifts.filter(g=>g.donor===n).length;
+      return `<tr><td><b>${n}</b></td><td>${DB.donees.includes(n)?'<span class="tag free">수증자</span>':'<span class="tag">증여자</span>'}</td>
+        <td>${p.birth?fmtD(p.birth):'<span style="color:var(--warn)">미입력</span>'}</td><td>${p.spouse||'-'}</td><td>${p.marry?fmtD(p.marry):'-'}</td>
+        <td>받음 ${cnt} · 줌 ${cnt2}</td>
+        <td><button class="btn sm" onclick="openPerson('${n}')">수정</button></td></tr>`;
+    }).join('') + `</tbody>`;
+
+  const keys=Object.keys(DB.rel).sort();
+  $('relTable').innerHTML = `<thead><tr><th>수증자</th><th>증여자</th><th>관계</th><th>10년 공제한도</th><th>세대생략</th><th></th></tr></thead><tbody>` +
+    keys.map(k=>{
+      const [a,b]=k.split('>'), v=DB.rel[k];
+      return `<tr><td><b>${a}</b></td><td>${b}</td><td>${RELNAME[v.r]}</td><td class="num">${cm(deductLimit(v.r,a,todayISO()))}</td>
+        <td>${v.skip?'<span class="tag skip">30% 할증</span>':'-'}</td>
+        <td><button class="btn sm" onclick="openRel('${a}','${b}')">수정</button> <button class="btn sm danger" onclick="delRel('${k}')">삭제</button></td></tr>`;
+    }).join('') + `</tbody>`;
+}
+function saveBase(){ DB.base=$('sBase').value; save(); toast('기준일을 저장했습니다.'); }
+function resetSeed(){
+  if(!confirm('모든 데이터를 엑셀 원본(2026.08.04 기준)으로 되돌립니다. 계속할까요?')) return;
+  DB = JSON.parse(JSON.stringify(SEED)); curDonee=DB.donees[0]; save(); toast('초기화했습니다.');
+}
+
+/* ── 백업 · 내보내기 ── */
+function dl(name, text, mime){
+  const blob=new Blob(['﻿'+text],{type:mime||'text/plain;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+function backupJSON(){ dl('증여이력_백업_'+todayISO()+'.json', JSON.stringify(DB,null,2), 'application/json'); toast('백업 파일을 저장했습니다.'); }
+function restoreJSON(inp){
+  const f=inp.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ try{ const d=JSON.parse(rd.result);
+    if(!d.gifts) throw 0;
+    DB=d; curDonee=DB.donees[0]; save(); toast('복원했습니다.');
+  }catch(e){ toast('올바른 백업 파일이 아닙니다.',1); } };
+  rd.readAsText(f); inp.value='';
+}
+function exportCSV(all){
+  const list = all ? DB.gifts.slice() : giftsOf(curDonee);
+  const head=['구분','수증자','증여자/대여자','거래일자','금액','세금','관계','유형','비고'];
+  const rows=list.sort((a,b)=>a.donee<b.donee?-1:(a.donee>b.donee?1:(a.date<b.date?-1:1))).map(g=>[
+    g.kind==='gift'?'증여':'대여', g.donee, g.donor, g.date, g.amount, taxOf(g),
+    RELNAME[relOf(g.donee,g.donor).r], g.type||'', (g.note||'').replace(/"/g,'""')
+  ]);
+  const csv=[head,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\r\n');
+  dl((all?'증여이력_전체_':'증여이력_'+curDonee+'_')+todayISO()+'.csv', csv, 'text/csv;charset=utf-8');
+  toast('CSV를 저장했습니다.');
+}
+
+/* ══════════════════════════════════════════════════════════
+   8. 동기화 (Cloudflare KV)
+   ══════════════════════════════════════════════════════════ */
+/* 워커에서 직접 서비스될 때만 상대경로, 그 외(깃허브 페이지·로컬파일)는 워커 API를 직접 호출 */
+const WORKER = 'https://gift-tax-app.yjjn2005.workers.dev';
+const API = (/\.workers\.dev$/.test(location.hostname) || location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? '' : WORKER;
+function syncURL(code){ return (API||'') + '/api/sync/' + encodeURIComponent(code); }
+function getCode(){
+  const c=($('sCode').value||'').trim().toUpperCase().replace(/[^A-Z0-9_-]/g,'');
+  if(c.length<4){ toast('동기화 코드는 4자 이상이어야 합니다.',1); return null; }
+  localStorage.setItem('giftCode',c); localStorage.setItem('giftAuto',$('sAuto').checked?'1':'0');
+  $('sCode').value=c; return c;
+}
+async function pushSync(silent){
+  const c = silent ? localStorage.getItem('giftCode') : getCode();
+  if(!c) return;
+  try{
+    const r = await fetch(syncURL(c),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({data:DB})});
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error||'실패');
+    if(!silent){ $('sMsg').innerHTML=`<div class="note ok">올렸습니다. 다른 기기에서 같은 코드 <b>${c}</b>로 내려받으세요. (${new Date(j.savedAt).toLocaleString('ko-KR')})</div>`; toast('업로드 완료'); }
+    renderHeader();
+  }catch(e){
+    if(!silent){ $('sMsg').innerHTML=`<div class="note bad">업로드 실패: ${e.message}</div>`; toast('업로드 실패',1); }
+  }
+}
+async function pullSync(){
+  const c=getCode(); if(!c) return;
+  try{
+    const r=await fetch(syncURL(c)); const j=await r.json();
+    if(!j.ok) throw new Error(j.error||'실패');
+    if(!j.data || !j.data.gifts) throw new Error('데이터 형식 오류');
+    if(!confirm('현재 기기의 데이터를 서버 데이터로 덮어씁니다. 계속할까요?')) return;
+    DB=j.data; curDonee=DB.donees[0]; save();
+    $('sMsg').innerHTML=`<div class="note ok">내려받았습니다. (서버 저장시각 ${new Date(j.savedAt).toLocaleString('ko-KR')})</div>`;
+    toast('동기화 완료');
+  }catch(e){
+    $('sMsg').innerHTML=`<div class="note bad">내려받기 실패: ${e.message}</div>`; toast('내려받기 실패',1);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   9. 부트
+   ══════════════════════════════════════════════════════════ */
+function tab(t){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on', b.dataset.t===t));
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on', s.id===t));
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>tab(b.dataset.t)));
+
+['cAmt','gAmt','gTax','rAmt'].forEach(id=>moneyInput($(id)));
+
+$('cDonee').addEventListener('change',()=>{ renderCalcSel(); renderCalc(); });
+['cDonor','cDate','cWed','cSkip'].forEach(id=>$(id).addEventListener('change',renderCalc));
+$('cAmt').addEventListener('input',renderCalc);
+
+$('rDonee').addEventListener('change',renderRevSel);
+$('pDoneeSel').addEventListener('change',renderPlanSel);
+
+['gKind','gDonee','gDonor','gDate','gWed','gNosum'].forEach(id=>$(id).addEventListener('change',previewGift));
+['gAmt','gTax'].forEach(id=>$(id).addEventListener('input',previewGift));
+$('xDonee').addEventListener('change',()=>{ const c=DB.rel[$('xDonee').value+'>'+$('xDonor').value]||{r:'asc',skip:0}; $('xRel').value=c.r; $('xSkip').checked=!!c.skip; });
+$('xDonor').addEventListener('change',()=>{ const c=DB.rel[$('xDonee').value+'>'+$('xDonor').value]||{r:'asc',skip:0}; $('xRel').value=c.r; $('xSkip').checked=!!c.skip; });
+$('sAuto').addEventListener('change',()=>localStorage.setItem('giftAuto',$('sAuto').checked?'1':'0'));
+
+renderAll();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body>
+</html>
