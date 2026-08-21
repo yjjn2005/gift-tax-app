@@ -1,0 +1,15 @@
+name = "gift-tax-app"
+main = "src/worker.js"
+compatibility_date = "2026-08-01"
+
+# 앱 화면(public 폴더) 정적 서비스
+[assets]
+directory = "./public"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+# 모든 디바이스 동기화용 저장소(KV)
+# pension-isa-app 과 동일 네임스페이스를 키 접두어(gift:)로 분리해 공용 사용
+[[kv_namespaces]]
+binding = "SYNC"
+id = "7eeab836bb7e4cb0b16d2fe20facb4b1"

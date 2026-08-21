@@ -1,0 +1,10 @@
+{
+  "name": "gift-tax-app",
+  "private": true,
+  "version": "1.0.0",
+  "description": "유앤김 패밀리 증여 이력 관리 · 증여세 계산 · 0원 역산",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  }
+}

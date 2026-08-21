@@ -1,0 +1,16 @@
+{
+  "name": "유앤김 패밀리 증여 레지스트리",
+  "short_name": "증여관리",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0f14",
+  "theme_color": "#0d1117",
+  "lang": "ko",
+  "description": "증여 이력 관리 · 증여세 자동계산 · 0원 역산",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "./icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
